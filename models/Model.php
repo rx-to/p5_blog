@@ -12,8 +12,7 @@ class Model
         define('DB_USER', 'root');
         define('DB_PASSWORD', '');
         define('DB_NAME', 'p5_blog');
-
-        return new PDO('mysql:dbname=' . DB_NAME . ';host=' . DB_HOST, DB_USER, DB_PASSWORD);
+        return new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASSWORD);
     }
 
     /**
@@ -22,13 +21,13 @@ class Model
      * @param string $column
      * @param string $value
      */
-    protected function selectFrom($table, $column = null, $value = null)
+    public function selectFrom($table, $column = null, $value = null)
     {
         $db    = $this->getDB();
-        $query = "SELECT * FROM `$table`" . $column && $value ? " WHERE `$column` = :value" : "";
+        $query = "SELECT * FROM `$table`" . ($column && $value ? " WHERE `$column` = :value" : "");
         $bind  = [':value' => $value];
-        $stmt  = $db->prepare($query, $bind);
-        $stmt->execute();
+        $stmt  = $db->prepare($query);
+        $stmt->execute($bind);
 
         $data = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -45,12 +44,12 @@ class Model
      * @param string $value
      * @return bool
      */
-    protected function deleteFrom($table, $column = null, $value = null)
+    public function deleteFrom($table, $column = null, $value = null)
     {
         $db     = $this->getDB();
         $query  = "DELETE FROM `$table` WHERE `$column` = :value";
         $bind   = [':value' => $value];
-        $stmt   = $db->prepare($query, $bind);
-        return $stmt->execute();
+        $stmt   = $db->prepare($query);
+        return $stmt->execute($bind);
     }
 }

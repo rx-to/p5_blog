@@ -1,4 +1,5 @@
 <?php
+require 'models/Model.php';
 class Controller
 {
     /**
@@ -25,6 +26,27 @@ class Controller
     }
 
     /**
+     * Returns meta data of current page.
+     * @param string $slug
+     * @return array
+     */
+    private function getMeta($slug)
+    {
+        $model = new Model();
+        $data  = $model->selectFrom('page', 'slug', $slug)[0];
+
+        if (!$data) throw new Exception('Pas de données pour cette page'); 
+
+        $meta  = [
+            'title'       => $data['meta_title'],
+            'description' => $data['meta_description'],
+            'keywords'    => $data['meta_keywords']
+        ];
+        
+        return $meta;
+    }
+
+    /**
      * Returns HTML of view.
      * @param string $slug
      * @return string
@@ -35,6 +57,7 @@ class Controller
         ob_start();
         require_once $file;
         $content = ob_get_clean();
+        $meta    = $this->getMeta($slug);
         require_once 'views/Template.php';
     }
 }
