@@ -33,16 +33,17 @@ class Controller
     private function getMeta($slug)
     {
         $model = new Model();
-        $data  = $model->selectFrom('page', 'slug', $slug)[0];
+        $data  = $model->selectFrom('page', 'slug', $slug);
 
-        if (!$data) throw new Exception('Pas de données pour cette page'); 
+        if (!$data) $data = $model->selectFrom('page', 'slug', '404');
 
-        $meta  = [
-            'title'       => $data['meta_title'],
-            'description' => $data['meta_description'],
-            'keywords'    => $data['meta_keywords']
-        ];
-        
+            $meta  = [
+                'title'       => $data[0]['meta_title'],
+                'description' => $data[0]['meta_description'],
+                'keywords'    => $data[0]['meta_keywords']
+            ];
+
+
         return $meta;
     }
 
