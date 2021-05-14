@@ -60,14 +60,14 @@ class Model
 
     /**
      * Returns page data.
-     * @param string $part
+     * @param string $visibility
      * @param string $slug
      * @return mixed
      */
-    public function selectPage($part, $slug) {
+    public function selectPage($visibility, $slug) {
         $db     = $this->getDB();
-        $query  = "SELECT * FROM `page` WHERE `part` = :part AND `slug` = :slug";
-        $bind   = [':part' => $part, ':slug' => $slug];
+        $query  = "SELECT * FROM `page` WHERE `visibility` = :visibility AND `slug` = :slug";
+        $bind   = [':visibility' => $visibility, ':slug' => $slug];
         $stmt   = $db->prepare($query);
         $stmt->execute($bind);
 

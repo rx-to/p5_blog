@@ -31,12 +31,12 @@ class Controller
      * @param  string $slug
      * @return array
      */
-    private function getPageData($slug)
+    private function getPageData($visibility, $slug)
     {
         $model = new Model();
-        $data  = $model->selectFrom('page', 'slug', $slug);
+        $data  = $model->selectPage($visibility, $slug);
 
-        if (!$data) $data = $model->selectFrom('page', 'slug', '404');
+        if (!$data) $data = $model->selectPage('page', 'slug', '404');
 
         $meta  = [
             'meta_title'       => $data[0]['meta_title'],
@@ -61,7 +61,7 @@ class Controller
         ob_start();
         require_once $file;
         $content = ob_get_clean();
-        $data    = $this->getPageData($slug);
+        $data    = $this->getPageData($visibility, $slug);
         require_once 'views/public/Template.php';
     }
 
@@ -69,10 +69,10 @@ class Controller
      * Requires controller of a specific page.
      * @param string $slug
      */
-    public function requireController($slug)
+    public function requireController($visibility, $slug)
     {
         $model = new Model();
-        $data = $model->selectFrom('page', 'slug', $slug);
+        $data = $model->selectPage($visibility, $slug);
         if ($data[0]['controller']) require_once('controllers/' . $data[0]['controller']);
     }
 }
