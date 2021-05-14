@@ -2,6 +2,10 @@
 
 class Model
 {
+    private const DB_HOST     = 'localhost';
+    private const DB_USER     = 'root';
+    private const DB_PASSWORD = '';
+    private const DB_NAME     = 'p5_blog';
     private $_pdo;
 
     /**
@@ -10,14 +14,8 @@ class Model
      */
     private function getDB()
     {
-        if (!$this->_pdo) {     
-            define('DB_HOST', 'localhost');
-            define('DB_USER', 'root');
-            define('DB_PASSWORD', '');
-            define('DB_NAME', 'p5_blog');
-
-            $this->_pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASSWORD);
-        }
+        if (!$this->_pdo)
+            $this->_pdo = new PDO('mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME . ';charset=utf8mb4', self::DB_USER, self::DB_PASSWORD);
         
         return $this->_pdo;
     }
