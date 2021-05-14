@@ -5,14 +5,14 @@ class PostManager extends Model {
      * Returns all posts.
      * @return array
      */
-    protected function getAll() {
+    public function getAll() {
         return $this->selectFrom('post');
     }
 
     /**
      * Deletes all posts.
      */
-    protected function deleteAll() {
+    public function deleteAll() {
         $this->deleteFrom('post');
     }
 
@@ -21,7 +21,7 @@ class PostManager extends Model {
      * @param string $column
      * @param mixed  $value
      */
-    protected function delete($column, $value) {
+    public function delete($column, $value) {
         $this->deleteFrom($column, $value);
     }
 }

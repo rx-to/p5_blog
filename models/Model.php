@@ -24,7 +24,7 @@ class Model
      * Returns all data from table.
      * @param string $table
      * @param string $column
-     * @param string $value
+     * @param mixed
      */
     public function selectFrom($table, $column = null, $value = null)
     {
@@ -56,5 +56,26 @@ class Model
         $bind   = [':value' => $value];
         $stmt   = $db->prepare($query);
         return $stmt->execute($bind);
+    }
+
+    /**
+     * Returns page data.
+     * @param string $part
+     * @param string $slug
+     * @return mixed
+     */
+    public function selectPage($part, $slug) {
+        $db     = $this->getDB();
+        $query  = "SELECT * FROM `page` WHERE `part` = :part AND `slug` = :slug";
+        $bind   = [':part' => $part, ':slug' => $slug];
+        $stmt   = $db->prepare($query);
+        $stmt->execute($bind);
+
+        $data = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
+
+        return count($data) > 0 ? $data : false;
     }
 }

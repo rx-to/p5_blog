@@ -1,8 +1,12 @@
 <?php
 
 class ControllerPost {
-    protected function postList() {
+    /**
+     * Returns all posts.
+     * @return array
+     */
+    public function postList() {
         $postManager = new PostManager();
-        $postList    = $postManager->getAll();
+        return $postManager->getAll();
     }
 }

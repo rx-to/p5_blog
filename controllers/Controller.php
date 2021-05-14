@@ -4,14 +4,14 @@ class Controller
 {
     /**
      * Returns view file from slug.
-     * @param  string $part
+     * @param  string $visibility
      * @param  string $slug
      * @return string
      */
-    private function getView($part, $slug)
+    private function getView($visibility, $slug)
     {
         $slugElements = explode('-', $slug);
-        $directory    = "views/$part/";
+        $directory    = "views/$visibility/";
         $filename     = 'view';
 
         foreach ($slugElements as $element) {
@@ -27,11 +27,11 @@ class Controller
     }
 
     /**
-     * Returns meta data of current page.
+     * Returns current page data.
      * @param  string $slug
      * @return array
      */
-    private function getMeta($slug)
+    private function getPageData($slug)
     {
         $model = new Model();
         $data  = $model->selectFrom('page', 'slug', $slug);
@@ -39,9 +39,11 @@ class Controller
         if (!$data) $data = $model->selectFrom('page', 'slug', '404');
 
         $meta  = [
-            'title'       => $data[0]['meta_title'],
-            'description' => $data[0]['meta_description'],
-            'keywords'    => $data[0]['meta_keywords']
+            'meta_title'       => $data[0]['meta_title'],
+            'meta_description' => $data[0]['meta_description'],
+            'meta_keywords'    => $data[0]['meta_keywords'],
+            'title'            => $data[0]['title'],
+            'subtitle'         => $data[0]['subtitle']
         ];
 
         return $meta;
@@ -49,18 +51,18 @@ class Controller
 
     /**
      * Generates HTML of view.
-     * @param  string $part
+     * @param  string $visibility
      * @param  string $slug
      * @return string
      */
-    public function displayView($part, $slug)
+    public function displayView($visibility, $slug)
     {
-        $file = $this->getView($part, $slug);
+        $file = $this->getView($visibility, $slug);
         ob_start();
         require_once $file;
         $content = ob_get_clean();
-        $meta    = $this->getMeta($slug);
-        require_once 'views/Template.php';
+        $data    = $this->getPageData($slug);
+        require_once 'views/public/Template.php';
     }
 
     /**
