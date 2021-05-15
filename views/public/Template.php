@@ -41,7 +41,7 @@
                 <div class="col-lg-8 col-md-10 mx-auto">
                     <div class="page-heading">
                         <h1><?= $data['title'] ?></h1>
-                        <?= $data['subtitle'] ? '<span class="subheading">' . $post['subtitle'] . '</span>' : '' ?>
+                        <?= $data['subtitle'] ? '<span class="subheading">' . $data['subtitle'] . '</span>' : '' ?>
                     </div>
                 </div>
             </div>

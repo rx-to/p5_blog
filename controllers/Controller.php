@@ -8,7 +8,7 @@ class Controller
      * @param  string $slug
      * @return string
      */
-    private function getView($visibility, $slug)
+    protected function getView($visibility, $slug)
     {
         $slugElements = explode('-', $slug);
         $directory    = "views/$visibility/";
@@ -31,14 +31,14 @@ class Controller
      * @param  string $slug
      * @return array
      */
-    private function getPageData($visibility, $slug)
+    protected function getPageData($visibility, $slug)
     {
         $model = new Model();
         $data  = $model->selectPage($visibility, $slug);
 
         if (!$data) $data = $model->selectPage('page', 'slug', '404');
 
-        $meta  = [
+        $data  = [
             'meta_title'       => $data[0]['meta_title'],
             'meta_description' => $data[0]['meta_description'],
             'meta_keywords'    => $data[0]['meta_keywords'],
@@ -46,7 +46,7 @@ class Controller
             'subtitle'         => $data[0]['subtitle']
         ];
 
-        return $meta;
+        return $data;
     }
 
     /**
