@@ -5,14 +5,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?= $data['meta_description'] ?>">
-    <meta name="keywords" content="<?= $data['meta_keywords'] ?>">
-    <title><?= $data['meta_title'] ?></title>
+    <meta name="description" content="<?= $data['meta']['description'] ?>">
+    <meta name="keywords" content="<?= $data['meta']['keywords'] ?>">
+    <title><?= $data['meta']['title'] ?></title>
     <link rel="icon" type="image/x-icon" href="assets/themes/clean-blog/favicon.ico" />
     <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
-    <link href="assets/themes/clean-blog/css/styles.css" rel="stylesheet" />
+    <link href="/assets/themes/clean-blog/css/style.css" rel="stylesheet" />
+    <link href="/assets/themes/clean-blog/css/custom.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -26,9 +27,9 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/articles">Articles</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/a-propos">À propos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/articles/">Articles</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/a-propos/">À propos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact/">Contact</a></li>
                 </ul>
             </div>
         </div>
@@ -40,8 +41,8 @@
             <div class="row">
                 <div class="col-lg-8 col-md-10 mx-auto">
                     <div class="page-heading">
-                        <h1><?= $data['title'] ?></h1>
-                        <?= $data['subtitle'] ? '<span class="subheading">' . $data['subtitle'] . '</span>' : '' ?>
+                        <h1><?= $data['page']['title'] ?></h1>
+                        <?= $data['page']['subtitle'] ? '<span class="subheading">' . $data['page']['subtitle'] . '</span>' : '' ?>
                     </div>
                 </div>
             </div>

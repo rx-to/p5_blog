@@ -8,24 +8,27 @@ $(function () {
         submitSuccess: function ($form, event) {
             event.preventDefault(); // prevent default submit behaviour
             // get values from FORM
-            var name = $("input#name").val();
+            var last_name = $("input#last_name").val();
+            var first_name = $("input#first_name").val();
             var email = $("input#email").val();
-            var phone = $("input#phone").val();
+            var phone_number = $("input#phone_number").val();
             var message = $("textarea#message").val();
-            var firstName = name; // For Success/Failure Message
-            // Check for white space in name for Success/Fail message
-            if (firstName.indexOf(' ') >= 0) {
-                firstName = name.split(' ').slice(0, -1).join(' ');
-            }
+            // var firstName = name; // For Success/Failure Message
+            // // Check for white space in name for Success/Fail message
+            // if (firstName.indexOf(' ') >= 0) {
+            //     firstName = name.split(' ').slice(0, -1).join(' ');
+            // }
             $this = $("#sendMessageButton");
             $this.prop("disabled", true); // Disable submit button until AJAX call is complete to prevent duplicate messages
             $.ajax({
-                url: "/assets/mail/contact_me.php", // make sure this points to the contact_me.php file on your server
+                url: "/contact",
                 type: "POST",
                 data: {
-                    name: name,
-                    phone: phone,
+                    last_name: last_name,
+                    first_name: first_name,
+                    phone_number: phone_number,
                     email: email,
+                    subject: subject,
                     message: message
                 },
                 cache: false,

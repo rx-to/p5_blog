@@ -12,16 +12,27 @@ class Controller
     {
         $slugElements = explode('-', $slug);
         $directory    = "views/$visibility/";
-        $filename     = 'view';
+        $viewFilename = 'view';
+        $tplFilename  = 'tpl';
 
         foreach ($slugElements as $element) {
-            $filename .= ucfirst($element);
+            $viewFilename .= ucfirst($element);
+            $tplFilename  .= ucfirst($element);
         }
 
-        $filename .= ".php";
-        $filepath  = $directory . $filename;
+        $viewFilename .= ".php";
+        $tplFilename  .= ".php";
 
-        if (!is_file($filepath)) $filepath = $directory . 'view404.php';
+        $viewFilepath  = $directory . $viewFilename;
+        $tplFilepath   = $directory . $tplFilename;
+
+        if (is_file($viewFilepath)) {
+            $filepath = $viewFilepath;
+        } elseif (is_file($tplFilepath)) {
+            $filepath = $tplFilepath;
+        } else {
+            $filepath = $directory . 'view404.php';
+        }
 
         return $filepath;
     }
@@ -34,17 +45,15 @@ class Controller
     protected function getPageData($visibility, $slug)
     {
         $model = new Model();
-        $data  = $model->selectPage($visibility, $slug);
 
-        if (!$data) $data = $model->selectPage('page', 'slug', '404');
+        $meta = $model->selectPage($visibility, $slug);
+        if (!$meta) $meta = $model->selectPage('public', '404');
 
-        $data  = [
-            'meta_title'       => $data[0]['meta_title'],
-            'meta_description' => $data[0]['meta_description'],
-            'meta_keywords'    => $data[0]['meta_keywords'],
-            'title'            => $data[0]['title'],
-            'subtitle'         => $data[0]['subtitle']
-        ];
+        $data['meta']['title']       = $meta[0]['meta_title'];
+        $data['meta']['description'] = $meta[0]['meta_description'];
+        $data['meta']['keywords']    = $meta[0]['meta_keywords'];
+        $data['page']['title']       = $meta[0]['title'];
+        $data['page']['subtitle']    = $meta[0]['subtitle'];
 
         return $data;
     }
@@ -55,24 +64,31 @@ class Controller
      * @param  string $slug
      * @return string
      */
-    public function displayView($visibility, $slug)
+    public function displayView($visibility, $slug, $id = null)
     {
         $file = $this->getView($visibility, $slug);
         ob_start();
         require_once $file;
         $content = ob_get_clean();
-        $data    = $this->getPageData($visibility, $slug);
+        $data    = $this->getPageData($visibility, $slug, $id);
         require_once 'views/public/Template.php';
     }
 
     /**
      * Requires controller of a specific page.
      * @param string $slug
+     * @return mixed
      */
     public function requireController($visibility, $slug)
     {
         $model = new Model();
         $data = $model->selectPage($visibility, $slug);
-        if ($data[0]['controller']) require_once('controllers/' . $data[0]['controller']);
+        $controller = null;
+        $controllerName = $data[0]['controller'] ? $data[0]['controller'] : null;
+        if ($controllerName) {
+            require_once("controllers/$controllerName.php");
+            $controller = new $controllerName();
+        }
+        return $controller;
     }
 }

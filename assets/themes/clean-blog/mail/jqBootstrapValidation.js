@@ -43,7 +43,7 @@
                     }).toArray()
                 );
 
-                $(uniqueForms).bind("submit", function (e) {
+                $(uniqueForms).bind("submit", function (event) {
                     var $form = $(this);
                     var warningsFound = 0;
                     var $inputs = $form.find("input,textarea,select").not("[type=submit],[type=image]").filter(settings.options.filter);
@@ -64,7 +64,7 @@
 
                     if (warningsFound) {
                         if (settings.options.preventSubmit) {
-                            e.preventDefault();
+                            event.preventDefault();
                         }
                         $form.addClass("error");
                         if ($.isFunction(settings.options.submitError)) {
@@ -493,7 +493,7 @@
                                 $helpBlock.html($helpBlock.data("original-contents"));
                             }
 
-                            if (e.type === "blur") {
+                            if (event.type === "blur") {
                                 $controlGroup.removeClass("success");
                             }
                         }

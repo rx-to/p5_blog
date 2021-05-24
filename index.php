@@ -1,10 +1,18 @@
 <?php
-
+require_once 'Util.php';
 require_once 'controllers/Controller.php';
 $controller = new Controller();
 
-$visibility = $_GET['visibility'] ? $_GET['visibility'] : 'public';
-$slug       = $_GET['slug'] ? $_GET['slug'] : 'accueil';
+$id         = $_GET['id'] ?? null;
+$visibility = $_GET['visibility'] ?  $_GET['visibility'] : 'public';
+$slug       = $_GET['slug']       ?  $_GET['slug']       : 'accueil';
 
-$controller->requireController($visibility, $slug);
-$controller->displayView($visibility, $slug, $data);
+if ($controller->requireController($visibility, $slug))
+    $controller = $controller->requireController($visibility, $slug);
+
+try {
+    $controller->displayView($visibility, $slug, $id);
+} catch (Exception $e) {
+    $controller = new Controller();
+    $controller->displayView('public', '404');
+}
