@@ -2,14 +2,41 @@
 require_once 'models/PostManager.php';
 class ControllerPost extends Controller
 {
+
     /**
-     * Returns all posts.
+     * Returns postlist.
      * @return array
      */
-    private function postList()
+    protected function getPostList()
     {
         $postManager = new PostManager();
-        return $postManager->getAll();
+        $page        = $postManager->selectPage('public', 'articles');
+        $postlist    = $postManager->getAll();
+        $pageNo      = $_GET['page_no'];
+
+        if ($postlist && $pageNo > 0 && $pageNo <= $postlist['number_of_pages']) {
+            foreach ($postlist as $key => $row) {
+                if (is_int($key))
+                    $postlist[$key]['slug'] = Util::slugify($row['title'] . '-' . $row['id']);
+            }
+
+            $data = [
+                'postlist' => $postlist,
+                'page'     => [
+                    'meta_title'       => str_replace('{% page_no %}', $pageNo, $page[0]['meta_title']),
+                    // 'meta_description' => $page[0]['meta_description'],
+                    // 'meta_keywords'    => $page[0]['meta_keywords'],
+                    'title'            => $page[0]['title'],
+                    'subtitle'         => $page[0]['subtitle'],
+                    'header'           => $page[0]['header'],
+                    'page_no'          => $pageNo
+                ]
+            ];
+        } else {
+            $data = false;
+        }
+
+        return $data;
     }
 
     /**
@@ -20,7 +47,27 @@ class ControllerPost extends Controller
     private function getPost($id)
     {
         $postManager = new PostManager();
-        return $postManager->get($id);
+
+        $page = $postManager->selectPage('public', 'article');
+        $post = $postManager->get($id);
+
+        if ($post) {
+            $data = [
+                'post' => $post,
+                'page' => [
+                    'meta_title'       => str_replace('{% title %}', $post['title'], $page[0]['meta_title']),
+                    'meta_description' => $page[0]['meta_description'],
+                    'meta_keywords'    => $page[0]['meta_keywords'],
+                    'title'            => $post['title'],
+                    'subtitle'         => $post['introduction'],
+                    'header'           => $page[0]['header'],
+                ]
+            ];
+        } else {
+            $data = false;
+        }
+
+        return $data;
     }
 
     /**
@@ -32,33 +79,7 @@ class ControllerPost extends Controller
      */
     protected function getPageData($visibility, $slug, $id = null)
     {
-        $model = new Model();
-        if ($id) {
-            $data['post'] = $this->getPost($id);
-        } else {
-            $data['postlist']         = $this->postList();
-            $data['postlist']['page'] = $_GET['page'];
-            if(!isset($_GET['page'])) header('Location: /articles/1/');
-        }
-
-        if ($id && $data['post'] || $data['postlist']['page'] > 0 && $data['postlist']['number_of_pages'] >= $data['postlist']['page']) {
-            $meta = $model->selectPage('public', 'articles');
-            if (!$meta) $meta = $model->selectPage('public', '404');
-
-            $data['meta']['title']       = $meta[0]['meta_title'];
-            $data['meta']['description'] = $meta[0]['meta_description'];
-            $data['meta']['keywords']    = $meta[0]['meta_keywords'];
-            $data['page']['title']       = $meta[0]['title'];
-            $data['page']['subtitle']    = $meta[0]['subtitle'];
-
-            foreach ($data['postlist'] as $key => $row) {
-                if (is_int($key))
-                    $data['postlist'][$key]['slug'] = Util::slugify($row['title'] . '-' . $row['id']);
-            }
-        } else {
-            $data = false;
-        }
-
+        $data  = $id ? $this->getPost($id) : $this->getPostList();
         return $data;
     }
 

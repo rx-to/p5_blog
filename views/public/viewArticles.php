@@ -26,15 +26,15 @@
             <div class="text-center">
                 <ul class="pager">
                     <?php
-                    if ($data['postlist']['number_of_pages'] > 1 && $data['postlist']['page'] - 1 >= 1)
-                        echo '<li class="arrow"><a href="/articles/' . ($data['postlist']['page'] - 1) . '/"><i class="fas fa-arrow-left"></i></a></li>';
+                    if ($data['postlist']['number_of_pages'] > 1 && $data['page']['page_no'] - 1 >= 1)
+                        echo '<li class="arrow"><a href="/articles/' . ($data['page']['page_no'] - 1) . '/"><i class="fas fa-arrow-left"></i></a></li>';
 
                     $dots = false;
                     for ($i = 1; $i <= $data['postlist']['number_of_pages']; $i++) {
-                        echo '<li' . ($data['postlist']['page'] == $i ? ' class="active"' : '') . '><a href="/articles/' . $i . '/">' . $i . '</a></li>';
+                        echo '<li' . ($data['page']['page_no'] == $i ? ' class="active"' : '') . '><a href="/articles/' . $i . '/">' . $i . '</a></li>';
                     }
-                    if ($data['postlist']['number_of_pages'] > 1 && $data['postlist']['page'] + 1 <= $data['postlist']['number_of_pages'])
-                        echo '<li class="arrow"><a href="/articles/' . ($data['postlist']['page'] + 1) . '/"><i class="fas fa-arrow-right"></i></a></li>';
+                    if ($data['postlist']['number_of_pages'] > 1 && $data['page']['page_no'] + 1 <= $data['postlist']['number_of_pages'])
+                        echo '<li class="arrow"><a href="/articles/' . ($data['page']['page_no'] + 1) . '/"><i class="fas fa-arrow-right"></i></a></li>';
                     ?>
                 </ul>
             </div>

@@ -46,14 +46,17 @@ class Controller
     {
         $model = new Model();
 
-        $meta = $model->selectPage($visibility, $slug);
-        if (!$meta) $meta = $model->selectPage('public', '404');
+        $page = $model->selectPage($visibility, $slug);
+        if (!$page) $page = $model->selectPage('public', '404');
 
-        $data['meta']['title']       = $meta[0]['meta_title'];
-        $data['meta']['description'] = $meta[0]['meta_description'];
-        $data['meta']['keywords']    = $meta[0]['meta_keywords'];
-        $data['page']['title']       = $meta[0]['title'];
-        $data['page']['subtitle']    = $meta[0]['subtitle'];
+        $data['page'] = [
+            'meta_title'       => $page[0]['meta_title'],
+            'meta_description' => $page[0]['meta_description'],
+            'meta_keywords'    => $page[0]['meta_keywords'],
+            'title'            => $page[0]['title'],
+            'subtitle'         => $page[0]['subtitle'],
+            'header'           => $page[0]['header']
+        ];
 
         return $data;
     }

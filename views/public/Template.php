@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?= $data['meta']['description'] ?>">
-    <meta name="keywords" content="<?= $data['meta']['keywords'] ?>">
-    <title><?= $data['meta']['title'] ?></title>
+    <?php
+    echo isset($data['page']['meta_description']) ? '<meta name="description" content="' . $data['page']['meta_description'] . '">' : '';
+    echo isset($data['page']['meta_keywords'])    ? '<meta name="keywords" content="' . $data['page']['meta_keywords'] . '">'       : '';
+    echo '<title>' . $data['page']['meta_title'] . '</title>';
+    ?>
     <link rel="icon" type="image/x-icon" href="assets/themes/clean-blog/favicon.ico" />
     <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
@@ -26,16 +28,16 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/articles/">Articles</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/a-propos/">À propos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/contact/">Contact</a></li>
+                    <li class="nav-item<?= in_array($slug, ['accueil']) ? ' active' : '' ?>"><a class="nav-link" href="/">Accueil</a></li>
+                    <li class="nav-item<?= in_array($slug, ['articles', 'article']) ? ' active' : '' ?>"><a class="nav-link" href="/articles/">Articles</a></li>
+                    <li class="nav-item<?= in_array($slug, ['a-propos']) ? ' active' : '' ?>"><a class="nav-link" href="/a-propos/">À propos</a></li>
+                    <li class="nav-item<?= in_array($slug, ['contact']) ? ' active' : '' ?>"><a class="nav-link" href="/contact/">Contact</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <header class="masthead" style="background-image: url('assets/img/contact-bg.jpg')">
+    <header class="masthead" style="background-image: url('/assets/themes/clean-blog/img/<?= $data['page']['header'] ?>')">
         <div class="overlay"></div>
         <div class="container">
             <div class="row">
@@ -84,7 +86,7 @@
                             </a>
                         </li>
                     </ul>
-                    <p class="copyright text-muted">Copyright © 2021 - EF Blog</p>
+                    <p class="copyright text-muted">Copyright © 2021 — EF Blog — <a href="/mentions-legales">Mentions légales</a></p>
                 </div>
             </div>
         </div>
@@ -92,9 +94,9 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/themes/clean-blog/mail/jqBootstrapValidation.js"></script>
-    <script src="assets/themes/clean-blog/mail/contact_me.js"></script>
-    <script src="assets/themes/clean-blog/js/scripts.js"></script>
+    <script src="/assets/themes/clean-blog/mail/jqBootstrapValidation.js"></script>
+    <script src="/assets/themes/clean-blog/mail/contact_me.js"></script>
+    <script src="/assets/themes/clean-blog/js/scripts.js"></script>
 </body>
 
 </html>

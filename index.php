@@ -4,11 +4,17 @@ require_once 'controllers/Controller.php';
 $controller = new Controller();
 
 $id         = $_GET['id'] ?? null;
-$visibility = $_GET['visibility'] ?  $_GET['visibility'] : 'public';
-$slug       = $_GET['slug']       ?  $_GET['slug']       : 'accueil';
+$visibility = $_GET['visibility'] ?? 'public';
+$slug       = $_GET['slug']       ?? 'accueil';
 
-if ($controller->requireController($visibility, $slug))
-    $controller = $controller->requireController($visibility, $slug);
+if ($controller2 = $controller->requireController($visibility, $slug))
+    $controller = $controller2;
+
+// Debug
+// var_dump($slug);
+// var_dump($visibility);
+// var_dump($id);
+// var_dump(get_class($controller));
 
 try {
     $controller->displayView($visibility, $slug, $id);

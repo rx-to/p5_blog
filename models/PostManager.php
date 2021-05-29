@@ -53,11 +53,25 @@ class PostManager extends Model
                    JOIN   `user` u ON p.`creation_author_id` = u.`id`
                    WHERE  p.`id` = :id";
 
-        $stmt   = $db->prepare($query, [':id' => $id]);
-        $stmt->execute();
+        $stmt   = $db->prepare($query);
+        $stmt->execute([':id' => $id]);
 
         if ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $data['slug'] = Util::slugify($data['title'] . '-' . $data['id']);
+
+            // Previous article slug
+            $query = "SELECT `id`, `title` FROM `post` WHERE `id` < :id LIMIT 1";
+            $stmt  = $db->prepare($query);
+            $stmt->execute([':id' => $id]);
+            if ($previous = $stmt->fetch(PDO::FETCH_ASSOC))
+                $data['previous'] = Util::slugify("{$previous['title']}-{$previous['id']}");
+
+            // Next article slug
+            $query = "SELECT `id`, `title` FROM `post` WHERE `id` > :id LIMIT 1";
+            $stmt  = $db->prepare($query);
+            $stmt->execute([':id' => $id]);
+            if ($next = $stmt->fetch(PDO::FETCH_ASSOC))
+                $data['next'] = Util::slugify("{$next['title']}-{$next['id']}");
         }
 
         return $data ? $data : false;
