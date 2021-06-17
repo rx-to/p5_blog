@@ -62,22 +62,6 @@ class Controller
     }
 
     /**
-     * Generates HTML of view.
-     * @param  string $visibility
-     * @param  string $slug
-     * @return string
-     */
-    public function displayView($visibility, $slug, $id = null)
-    {
-        $file = $this->getView($visibility, $slug);
-        ob_start();
-        require_once $file;
-        $content = ob_get_clean();
-        $data    = $this->getPageData($visibility, $slug, $id);
-        require_once 'views/public/Template.php';
-    }
-
-    /**
      * Requires controller of a specific page.
      * @param string $slug
      * @return mixed
@@ -93,5 +77,53 @@ class Controller
             $controller = new $controllerName();
         }
         return $controller;
+    }
+
+    /**
+     * Generates HTML of view.
+     * @param  string $visibility
+     * @param  string $slug
+     * @return string
+     */
+    public function displayView($visibility, $slug, $id = null)
+    {
+        $file = $this->getView($visibility, $slug, $id);
+        $data = $this->getPageData($visibility, $slug, $id);
+        if (!$data) throw new Exception('Pas de données pour cette URL', 404);
+
+        ob_start();
+        require_once $file;
+        $content = ob_get_clean();
+
+        require_once 'views/public/Template.php';
+    }
+
+    /**
+     * Generates an alert.
+     * @param bool   $result `true` = success, `false` = error.
+     * @param array  $errors  Contains error messages.
+     * @param string $success Contains success message.
+     * @return string
+     */
+    protected function generateAlert($errors, $success)
+    {
+        $alert = '<div class="alert alert-' . (empty($errors) ? 'success' : 'danger') . '">';
+
+        if (!empty($errors)) {
+            if (count($errors) == 1) {
+                $alert .= "<p>{$errors[0]}</p>";
+            } else {
+                $alert .= "<ul>";
+                foreach ($errors as $error) {
+                    $alert .= "</li>$error</li>";
+                }
+                $alert .= "</ul>";
+            }
+        } else {
+            $alert .= "<p>$success</p>";
+        }
+        $alert .= '</div>';
+
+        return $alert;
     }
 }

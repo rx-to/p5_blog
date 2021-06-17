@@ -15,9 +15,9 @@ if ($controller2 = $controller->requireController($visibility, $slug))
 // var_dump($visibility);
 // var_dump($id);
 // var_dump(get_class($controller));
-
 try {
-    $controller->displayView($visibility, $slug, $id);
+    if (empty($_POST))
+        $controller->displayView($visibility, $slug, $id);
 } catch (Exception $e) {
     $controller = new Controller();
     $controller->displayView('public', '404');

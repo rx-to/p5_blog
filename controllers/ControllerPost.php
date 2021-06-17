@@ -2,16 +2,37 @@
 require_once 'models/PostManager.php';
 class ControllerPost extends Controller
 {
+    function __construct()
+    {
+        if (!empty($_POST)) {
+            switch ($_POST['action']) {
+                case 'postComment':
+                    echo $this->postComment($_POST);
+                    break;
+
+                case 'getComments':
+                    echo $this->getComments($_POST['post_id']);
+
+                case 'deleteComment':
+                    echo $this->deleteComment($_POST['comment_id']);
+                    break;
+
+                case 'reportComment';
+                    break;
+            }
+        }
+    }
 
     /**
      * Returns postlist.
+     * @param  int   $limit
      * @return array
      */
-    protected function getPostList()
+    protected function getPostList($limit = null)
     {
         $postManager = new PostManager();
         $page        = $postManager->selectPage('public', 'articles');
-        $postlist    = $postManager->getAll();
+        $postlist    = $postManager->getAll($limit);
         $pageNo      = $_GET['page_no'];
 
         if ($postlist && $pageNo > 0 && $pageNo <= $postlist['number_of_pages']) {
@@ -41,10 +62,10 @@ class ControllerPost extends Controller
 
     /**
      * Returns a post.
-     * @param int $id
+     * @param  int   $id
      * @return array
      */
-    private function getPost($id)
+    public function getPost($id)
     {
         $postManager = new PostManager();
 
@@ -84,21 +105,42 @@ class ControllerPost extends Controller
     }
 
     /**
-     * Generates HTML of view.
-     * @param  string $visibility
-     * @param  string $slug
+     * Post a comment.
+     * @param  array $data
      * @return string
      */
-    public function displayView($visibility, $slug, $id = null)
+    private function postComment($data)
     {
-        $file = $this->getView($visibility, $slug, $id);
-        $data = $this->getPageData($visibility, $slug, $id);
-        if (!$data) throw new Exception('Pas de données pour cette URL', 404);
+        $errors = [];
+        if (strlen(strip_tags($data['comment'])) <= 3000) {
+            $postManager = new PostManager();
+            if (!$postManager->insertComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+            return $this->generateAlert($errors, "Votre commentaire a été envoyé. Il s'affichera après avoir été approuvé par un administrateur.");
+        }
+    }
 
-        ob_start();
-        require_once $file;
-        $content = ob_get_clean();
+    /**
+     * Returns current page data.
+     * @param  int    $id
+     * @return string
+     */
+    private function deleteComment($id)
+    {
+        // TODO: Checks if user is admin or is comment's author
+        $errors = [];
+        $postManager = new PostManager();
+        if (!$postManager->deleteComment($id)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        return $this->generateAlert($errors, "Votre commentaire a été supprimé.");
+    }
 
-        require_once 'views/public/Template.php';
+    /**
+     * Returns post comments.
+     * @param  int   $id Post ID.
+     * @return array 
+     */
+    private function getComments($id)
+    {
+        $postManager = new PostManager();
+        return $postManager->selectComments($id);
     }
 }
