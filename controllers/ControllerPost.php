@@ -160,12 +160,14 @@ class ControllerPost extends Controller
                 $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
                 $html .=         '<div class="actions__wrapper">';
                 // TODO: Manage user permissions. 
-                $html .=             '<ul class="actions__list"0>';
-                $html .=                 '<li><a href="#reply-to-comment"">Répondre</a></li>';
-                $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
-                $html .=                 '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
-                $html .=                 '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
-                $html .=             '</ul>';
+                $html .=             '<nav class="actions__list">';
+                $html .=                 '<ul>';
+                $html .=                     '<li><a href="#reply-to-comment"">Répondre</a></li>';
+                $html .=                     '<li><a href="#edit-comment">Modifier</a></li>';
+                $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
+                $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                $html .=                 '</ul>';
+                $html .=             '</nav>';
                 $html .=         '</div>';
                 $html .=     '</div>';
                 $html .=     '<a href="/utilisateur/' . $comment['user_slug'] . '/">';

@@ -34,23 +34,20 @@ $(".ajax-form").on("submit", function (e) {
 	ajax(data);
 });
 
-// Post comments.
+// Display comment action list.
 $(".comment__nav-trigger").on("click", function (e) {
+	$('.actions__list').removeClass('displayed');
 	let target = $("#" + $(this).closest(".comment").attr("id") + " .actions__list");
 	target.toggleClass("displayed");
 	e.stopPropagation();
 });
 
+// Hide comment action list.
 $(document).on("click", function (e) {
-	if ($(e.target).parent(".actions__list").length == 0) $(".actions__list ").removeClass("displayed");
+	if ($(e.target).parent(".actions__list").length == 0) $(".actions__list").removeClass("displayed");
 });
 
-$("a[href='#edit-comment']").on("click", function () {
-	$("input[name=comment_id]");
-	$("#comment").html($("#comment__content-" + $(this).closest(".comment").attr("data-id")).html());
-	$("html, body").animate({ scrollTop: $("#comment").offset().top - 67 }, 200);
-});
-
+// Comment actions.
 $(".comment .actions a").on("click", function (e) {
 	e.preventDefault();
 
@@ -61,6 +58,7 @@ $(".comment .actions a").on("click", function (e) {
 	let href = $(this).attr("href");
 	let commentID = $(this).closest(".comment").attr("data-id");
 	let postID = $("input[name=post_id]").val();
+	let modal = false;
 
 	switch (href) {
 		case "#delete-comment":
@@ -68,6 +66,7 @@ $(".comment .actions a").on("click", function (e) {
 			content = "Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?";
 			dataAction = "delete-comment";
 			dataAttr = { "post-id": postID, "comment-id": commentID };
+			modal = true;
 			break;
 
 		case "#report-comment":
@@ -75,17 +74,28 @@ $(".comment .actions a").on("click", function (e) {
 			content = "Pour quelle(s) raison(s) souhaitez-vous signaler ce commentaire ?";
 			dataAction = "report-comment";
 			dataAttr = { "comment-id": commentID };
+			modal = true;
+			break;
+
+		case "#edit-comment":
+			let comment = $("#comment__content-" + $(this).closest(".comment").attr("data-id")).html().replace(/<br>/, '');
+			$("#comment").html(comment);
+			$("html, body").animate({ scrollTop: $("#comment").offset().top - 67 }, 200);
 			break;
 	}
 
-	$(".modal .modal-title").html(title);
-	$(".modal .modal-body").html(content);
-	$(".modal .btn-yes").attr("data-action", dataAction);
-	$.each(dataAttr, function (index, value) {
-		$(".modal .btn-yes").attr("data-" + index, value);
-	});
+	// If action requires modal.
+	if (modal) {
+		$(".modal .modal-title").html(title);
+		$(".modal .modal-body").html(content);
+		$(".modal .btn-yes").attr("data-action", dataAction);
+		$.each(dataAttr, function (index, value) {
+			$(".modal .btn-yes").attr("data-" + index, value);
+		});
+	}
 });
 
+// Popup
 $(".modal .btn-yes").on("click", function () {
 	let data = new FormData();
 	let action = $(this).attr("data-action");
