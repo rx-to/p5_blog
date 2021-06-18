@@ -16,6 +16,7 @@ class ControllerPost extends Controller
                     break;
 
                 case 'reportComment';
+                    $json['alert'] = $this->reportComment($_POST['comment_id'], $_POST['report']);
                     break;
             }
             echo json_encode($json);
@@ -119,7 +120,7 @@ class ControllerPost extends Controller
     }
 
     /**
-     * Returns current page data.
+     * Deletes comment.
      * @param  int    $id
      * @return string
      */
@@ -130,6 +131,21 @@ class ControllerPost extends Controller
         $postManager = new PostManager();
         if (!$postManager->deleteComment($id)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
         return $this->generateAlert($errors, "Votre commentaire a été supprimé.");
+    }
+
+    /**
+     * Reports comment.
+     * @param  int    $id
+     * @return string
+     */
+    private function reportComment($id, $report)
+    {
+        $errors = [];
+        $postManager = new PostManager();
+        if(strlen($report) < 5) $report = 1;
+        if (!$postManager->reportComment($id, $report))
+            $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        return $this->generateAlert($errors, "Votre signalement a bien été pris en compte. Nous l'étudierons dans les plus brefs délais afin de déterminer s'il enfreint nos conditions générales d'utilisation.");
     }
 
     /**

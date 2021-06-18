@@ -110,7 +110,7 @@ class PostManager extends Model
     }
 
     /**
-     * Inserts a comment.
+     * Inserts comment.
      * @param string $data
      * @return bool
      */
@@ -130,7 +130,7 @@ class PostManager extends Model
     }
 
     /**
-     * Deletes a comment.
+     * Deletes comment.
      * @param  int  $id
      * @return bool
      */
@@ -140,5 +140,19 @@ class PostManager extends Model
         $query = "DELETE FROM `post_comment` WHERE `id` = :id";
         $stmt  = $db->prepare($query);
         return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Reports comment.
+     * @param  int  $id
+     * @return bool
+     */
+    public function reportComment($id, $report)
+    {
+        $db     = $this->getDB();
+        $query  = "UPDATE `post_comment` SET `report` = :report WHERE `id` = :id";
+        $stmt   = $db->prepare($query);
+        $params = [':id' => $id, ':report' => $report];
+        return $stmt->execute($params);
     }
 }

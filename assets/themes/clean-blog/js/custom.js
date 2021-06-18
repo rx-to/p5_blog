@@ -10,6 +10,9 @@ function ajax(data) {
 		success: function (result) {
 			let json = JSON.parse(result);
 
+			// Empty inputs & textareas
+			$("input, textarea").val("");
+
 			switch (data.get("action")) {
 				case "deleteComment":
 					$(".comment-list").html(json.comments);
@@ -20,9 +23,13 @@ function ajax(data) {
 
 			$(".ajax-form__alert").html(json.alert);
 			$(".ajax-form__alert").fadeIn();
+
 			setTimeout(function () {
-				$(".ajax-form__alert").fadeOut();
-			}, 5000);
+				$("html, body").animate({ scrollTop: $(".ajax-form__alert").offset().top - 67 }, 200);
+				setTimeout(function () {
+					$(".ajax-form__alert").fadeOut();
+				}, 5000);
+			}, 100);
 		},
 	});
 }
@@ -63,7 +70,7 @@ $(document).on("click", ".comment .actions a", function (e) {
 	switch (href) {
 		case "#delete-comment":
 			title = "Supprimer un commentaire";
-			content = "Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?";
+			content = '<p class="mb-0">Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?</p>';
 			dataAction = "delete-comment";
 			dataAttr = { "post-id": postID, "comment-id": commentID };
 			modal = true;
@@ -71,7 +78,12 @@ $(document).on("click", ".comment .actions a", function (e) {
 
 		case "#report-comment":
 			title = "Signaler un commentaire";
-			content = "Pour quelle(s) raison(s) souhaitez-vous signaler ce commentaire ?";
+			content = "<p>Pour quelle(s) raison(s) souhaitez-vous signaler ce commentaire ?</p>";
+			content += '<div class="form-group floating-label-form-group controls">';
+			content += "<label>Raison du signalement</label>";
+			content += '<textarea class="form-control" id="report" name="report" rows="2" placeholder="La raison de votre signalement..."></textarea>';
+			content += '<p class="help-block text-danger"></p>';
+			content += "</div>";
 			dataAction = "report-comment";
 			dataAttr = { "comment-id": commentID };
 			modal = true;
@@ -111,8 +123,10 @@ $(".modal .btn-yes").on("click", function () {
 			break;
 
 		case "report-comment":
+			let report = $("#report").val();
 			data.append("action", "reportComment");
 			data.append("comment_id", commentID);
+			data.append("report", report);
 			break;
 	}
 
