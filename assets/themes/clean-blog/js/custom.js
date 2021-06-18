@@ -7,14 +7,19 @@ function ajax(data) {
 		data: data,
 		processData: false,
 		contentType: false,
-		success: function (alert) {
+		success: function (result) {
+			let json = JSON.parse(result);
+
 			switch (data.get("action")) {
 				case "deleteComment":
-					
+					$(".comment-list").html(json.comments);
+					break;
+				default:
 					break;
 			}
 
-			$(".ajax-form__alert").html(alert);
+			$(".ajax-form__alert").html(json.alert);
+			$(".ajax-form__alert").fadeIn();
 			setTimeout(function () {
 				$(".ajax-form__alert").fadeOut();
 			}, 5000);
@@ -25,7 +30,6 @@ function ajax(data) {
 // Forms.
 $(".ajax-form").on("submit", function (e) {
 	e.preventDefault();
-	let form = $(this);
 	let data = new FormData($(this)[0]);
 	ajax(data);
 });
@@ -53,43 +57,50 @@ $(".comment .actions a").on("click", function (e) {
 	let title;
 	let content;
 	let dataAction;
+	let dataAttr;
 	let href = $(this).attr("href");
-	let id = $(this).closest(".comment").attr("data-id");
+	let commentID = $(this).closest(".comment").attr("data-id");
+	let postID = $("input[name=post_id]").val();
 
 	switch (href) {
 		case "#delete-comment":
 			title = "Supprimer un commentaire";
 			content = "Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?";
 			dataAction = "delete-comment";
+			dataAttr = { "post-id": postID, "comment-id": commentID };
 			break;
 
 		case "#report-comment":
 			title = "Signaler un commentaire";
 			content = "Pour quelle(s) raison(s) souhaitez-vous signaler ce commentaire ?";
 			dataAction = "report-comment";
+			dataAttr = { "comment-id": commentID };
 			break;
 	}
 
 	$(".modal .modal-title").html(title);
 	$(".modal .modal-body").html(content);
 	$(".modal .btn-yes").attr("data-action", dataAction);
-	$(".modal .btn-yes").attr("data-id", id);
+	$.each(dataAttr, function (index, value) {
+		$(".modal .btn-yes").attr("data-" + index, value);
+	});
 });
 
 $(".modal .btn-yes").on("click", function () {
 	let data = new FormData();
 	let action = $(this).attr("data-action");
-	let id = $(this).attr("data-id");
-
+	let commentID = $(this).attr("data-comment-id");
+	let postID = $(this).attr("data-post-id");
 	switch (action) {
 		case "delete-comment":
 			data.append("action", "deleteComment");
-			data.append("comment_id", id);
+			data.append("comment_id", commentID);
+			data.append("post_id", postID);
 			break;
 
 		case "report-comment":
 			data.append("action", "reportComment");
-			data.append("comment_id", id);
+			data.append("comment_id", commentID);
 			break;
 	}
 

@@ -34,7 +34,7 @@
                         <input type="hidden" name="post_id" value="<?= $data['post']['id'] ?>">
                         <input type="hidden" name="reply_to_comment_id" value="0">
                         <div class="control-group">
-                            <div class="ajax-form__alert"></div>
+                            <div class="ajax-form__alert" style="display: none;"></div>
                             <img src="/upload/avatars/avatar-1.png" alt="Avatar de prenom nom" class="comment__author-avatar">
                             <div class="form-group floating-label-form-group controls">
                                 <label>Votre commentaire</label>
@@ -50,34 +50,8 @@
 
                     <div class="comment-list">
                         <?php
-                        echo '<h2>Commentaires (' . $data['post']['number_of_comments'] . ')</h2>';
-                        if ($data['post']['number_of_comments'] > 0) {
-                            foreach ($data['post']['comments'] as $comment) {
-                                echo '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
-                                echo        '<div class="actions">';
-                                echo            '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
-                                echo            '<div class="actions__wrapper">';
-                                echo                '<ul class="actions__list"0>';
-                                echo                    '<li><a href="#reply-to-comment"">Répondre</a></li>';
-                                echo                    '<li><a href="#edit-comment">Modifier</a></li>';
-                                echo                    '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
-                                echo                    '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
-                                echo                '</ul>';
-                                echo            '</div>';
-                                echo        '</div>';
-                                echo     '<a href="/utilisateur/' . $comment['user_slug'] . '/">';
-                                echo        '<img src="/upload/avatars/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
-                                echo     '</a>';
-                                echo     '<header>';
-                                echo         '<h3 class="comment__author-name"><a href="/utilisateur/' . $comment['user_slug'] . '/">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</a></h3>';
-                                echo         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
-                                echo     '</header>';
-                                echo     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
-                                echo '</div>';
-                            }
-                        } else {
-                            echo '<p>Soyez la première personne à commenter cet article ! 😜</p>';
-                        }
+                        $controllerPost = new ControllerPost();
+                        echo $controllerPost->generateCommentList($data['post']['id']);
                         ?>
                     </div>
                 </section>

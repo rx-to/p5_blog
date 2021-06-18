@@ -7,19 +7,18 @@ class ControllerPost extends Controller
         if (!empty($_POST)) {
             switch ($_POST['action']) {
                 case 'postComment':
-                    echo $this->postComment($_POST);
+                    $json['alert'] = $this->postComment($_POST);
                     break;
 
-                case 'getComments':
-                    echo $this->getComments($_POST['post_id']);
-
                 case 'deleteComment':
-                    echo $this->deleteComment($_POST['comment_id']);
+                    $json['alert']    = $this->deleteComment($_POST['comment_id']);
+                    $json['comments'] = $this->generateCommentList($_POST['post_id']);
                     break;
 
                 case 'reportComment';
                     break;
             }
+            echo json_encode($json);
         }
     }
 
@@ -142,5 +141,47 @@ class ControllerPost extends Controller
     {
         $postManager = new PostManager();
         return $postManager->selectComments($id);
+    }
+
+    /**
+     * Generates comment list.
+     * @param  int   $id Post ID.
+     * @return string      
+     */
+    public function generateCommentList($id)
+    {
+        $comments = $this->getComments($id);
+
+        $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
+        if (count($comments) > 0) {
+            foreach ($comments as $comment) {
+                $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
+                $html .=     '<div class="actions">';
+                $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
+                $html .=         '<div class="actions__wrapper">';
+                // TODO: Manage user permissions. 
+                $html .=             '<ul class="actions__list"0>';
+                $html .=                 '<li><a href="#reply-to-comment"">Répondre</a></li>';
+                $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
+                $html .=                 '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
+                $html .=                 '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                $html .=             '</ul>';
+                $html .=         '</div>';
+                $html .=     '</div>';
+                $html .=     '<a href="/utilisateur/' . $comment['user_slug'] . '/">';
+                $html .=         '<img src="/upload/avatars/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
+                $html .=     '</a>';
+                $html .=     '<header>';
+                $html .=         '<h3 class="comment__author-name"><a href="/utilisateur/' . $comment['user_slug'] . '/">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</a></h3>';
+                $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
+                $html .=     '</header>';
+                $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
+                $html .= '</div>';
+            }
+        } else {
+            $html .= '<p>Soyez la première personne à commenter cet article ! 😜</p>';
+        }
+
+        return $html;
     }
 }

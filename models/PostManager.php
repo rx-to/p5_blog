@@ -2,6 +2,31 @@
 
 class PostManager extends Model
 {
+
+    /**
+     * Returns post comments.
+     * @param  int  $id Post ID.
+     * @return bool
+     */
+    public function selectComments($id)
+    {
+        $db    = $this->getDB();
+
+        $query = "SELECT pc.*, DATE_FORMAT(pc.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
+                   FROM `post_comment` pc 
+                   JOIN `user`         u  ON pc.`author_id` = u.`id`
+                   WHERE `post_id` = :post_id";
+        $stmt  = $db->prepare($query);
+        $stmt->execute([':post_id' => $id]);
+        $comments = [];
+        while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $comment['user_slug']   = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
+            $comments[] = $comment;
+        }
+
+        return $comments;
+    }
+
     /**
      * Returns all posts.
      * @param int $limit
@@ -64,16 +89,7 @@ class PostManager extends Model
             $postlist['slug'] = Util::slugify($postlist['title'] . '-' . $postlist['id']);
 
             // Comments
-            $query = "SELECT pc.*, DATE_FORMAT(pc.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
-                      FROM `post_comment` pc 
-                      JOIN `user`         u  ON pc.`author_id` = u.`id`
-                      WHERE `post_id` = :post_id";
-            $stmt  = $db->prepare($query);
-            $stmt->execute([':post_id' => $id]);
-            while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $comment['user_slug'] = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
-                $postlist['comments'][]   = $comment;
-            }
+            $postlist['comments'] = $this->selectComments($id);
 
             // Previous article slug
             $query = "SELECT `id`, `title` FROM `post` WHERE `id` < :id ORDER BY `creation_date` DESC LIMIT 1";
@@ -124,26 +140,5 @@ class PostManager extends Model
         $query = "DELETE FROM `post_comment` WHERE `id` = :id";
         $stmt  = $db->prepare($query);
         return $stmt->execute([':id' => $id]);
-    }
-
-    /**
-     * Returns post comments.
-     * @param  int  $id Post ID.
-     * @return bool
-     */
-    public function selectComments($id)
-    {
-        $db    = $this->getDB();
-
-        $query = "SELECT pc.*, DATE_FORMAT(pc.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
-                   FROM `post_comment` pc 
-                   JOIN `user`         u  ON pc.`author_id` = u.`id`
-                   WHERE `post_id` = :post_id";
-        $stmt  = $db->prepare($query);
-        $stmt->execute([':post_id' => $id]);
-        while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $comment['user_slug']   = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
-            $postlist['comments'][] = $comment;
-        }
     }
 }
