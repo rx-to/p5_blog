@@ -35,8 +35,8 @@ $(".ajax-form").on("submit", function (e) {
 });
 
 // Display comment action list.
-$(".comment__nav-trigger").on("click", function (e) {
-	$('.actions__list').removeClass('displayed');
+$(document).on("click", ".comment__nav-trigger", function (e) {
+	$(".actions__list").removeClass("displayed");
 	let target = $("#" + $(this).closest(".comment").attr("id") + " .actions__list");
 	target.toggleClass("displayed");
 	e.stopPropagation();
@@ -48,7 +48,7 @@ $(document).on("click", function (e) {
 });
 
 // Comment actions.
-$(".comment .actions a").on("click", function (e) {
+$(document).on("click", ".comment .actions a", function (e) {
 	e.preventDefault();
 
 	let title;
@@ -78,7 +78,9 @@ $(".comment .actions a").on("click", function (e) {
 			break;
 
 		case "#edit-comment":
-			let comment = $("#comment__content-" + $(this).closest(".comment").attr("data-id")).html().replace(/<br>/, '');
+			let comment = $("#comment__content-" + $(this).closest(".comment").attr("data-id"))
+				.html()
+				.replace(/<br>/, "");
 			$("#comment").html(comment);
 			$("html, body").animate({ scrollTop: $("#comment").offset().top - 67 }, 200);
 			break;

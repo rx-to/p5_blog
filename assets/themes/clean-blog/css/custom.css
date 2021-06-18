@@ -142,6 +142,10 @@ section {
     position: relative;
     font-size: 15px;
 }
+.comment__nav-trigger:hover {
+	cursor: pointer;
+	color: #0085a1;
+}
 .comment .actions__list ul {
 	transition: cubic-bezier(0.075, 0.82, 0.165, 1);
     position: absolute;
@@ -163,10 +167,6 @@ section {
     list-style: none;
     padding: .5rem 1rem;
 	background: #ffffff;
-}
-.comment .actions i:hover {
-	cursor: pointer;
-	color: #0085a1;
 }
 form button {
 	margin-top: 1rem;
