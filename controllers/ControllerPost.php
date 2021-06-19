@@ -7,7 +7,7 @@ class ControllerPost extends Controller
         if (!empty($_POST)) {
             switch ($_POST['action']) {
                 case 'postComment':
-                    $json['alert'] = $this->postComment($_POST);
+                    $json['alert'] = !$_POST['comment_id'] ? $this->postComment($_POST) : $this->editComment($_POST);
                     break;
 
                 case 'deleteComment':
@@ -105,7 +105,7 @@ class ControllerPost extends Controller
     }
 
     /**
-     * Post a comment.
+     * Posts comment.
      * @param  array $data
      * @return string
      */
@@ -116,6 +116,21 @@ class ControllerPost extends Controller
             $postManager = new PostManager();
             if (!$postManager->insertComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
             return $this->generateAlert($errors, "Votre commentaire a été envoyé. Il s'affichera après avoir été approuvé par un administrateur.");
+        }
+    }
+
+    /**
+     * Edits comment.
+     * @param  array $data
+     * @return string
+     */
+    private function editComment($data)
+    {
+        $errors = [];
+        if (strlen(strip_tags($data['comment'])) <= 3000) {
+            $postManager = new PostManager();
+            if (!$postManager->updateComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+            return $this->generateAlert($errors, "Votre commentaire a bien été mis à jour. Vos modifications s'afficheront après avoir été approuvées par un administrateur.");
         }
     }
 
@@ -142,7 +157,7 @@ class ControllerPost extends Controller
     {
         $errors = [];
         $postManager = new PostManager();
-        if(strlen($report) < 5) $report = 1;
+        if (strlen($report) < 5) $report = 1;
         if (!$postManager->reportComment($id, $report))
             $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
         return $this->generateAlert($errors, "Votre signalement a bien été pris en compte. Nous l'étudierons dans les plus brefs délais afin de déterminer s'il enfreint nos conditions générales d'utilisation.");
@@ -194,6 +209,7 @@ class ControllerPost extends Controller
                 $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
                 $html .=     '</header>';
                 $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
+                $html .=     $comment['update_date_fr'] ? '<div class="comment__date mt-3 text-right"><em>(Modifié le ' . $comment['update_date_fr'] . ')</em></div>' : '';
                 $html .= '</div>';
             }
         } else {

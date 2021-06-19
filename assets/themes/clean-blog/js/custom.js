@@ -11,7 +11,7 @@ function ajax(data) {
 			let json = JSON.parse(result);
 
 			// Empty inputs & textareas
-			$("input, textarea").val("");
+			$("input:not(input[type=hidden]), textarea").val("");
 
 			switch (data.get("action")) {
 				case "deleteComment":
@@ -70,7 +70,7 @@ $(document).on("click", ".comment .actions a", function (e) {
 	switch (href) {
 		case "#delete-comment":
 			title = "Supprimer un commentaire";
-			content = '<p class="mb-0">Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?</p>';
+			content = '<p>Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?</p>';
 			dataAction = "delete-comment";
 			dataAttr = { "post-id": postID, "comment-id": commentID };
 			modal = true;
@@ -90,9 +90,11 @@ $(document).on("click", ".comment .actions a", function (e) {
 			break;
 
 		case "#edit-comment":
-			let comment = $("#comment__content-" + $(this).closest(".comment").attr("data-id"))
+			let commentID = $(this).closest(".comment").attr("data-id");
+			let comment = $("#comment__content-" + commentID)
 				.html()
 				.replace(/<br>/, "");
+			$('input[name=comment_id]').val(commentID);
 			$("#comment").html(comment);
 			$("html, body").animate({ scrollTop: $("#comment").offset().top - 67 }, 200);
 			break;
@@ -110,7 +112,7 @@ $(document).on("click", ".comment .actions a", function (e) {
 });
 
 // Popup
-$(".modal .btn-yes").on("click", function () {
+$(document).on("click", ".modal .btn-yes", function () {
 	let data = new FormData();
 	let action = $(this).attr("data-action");
 	let commentID = $(this).attr("data-comment-id");

@@ -110,6 +110,7 @@ section {
 .comment {
 	position: relative;
 	padding: 15px 0;
+	padding-right: 1rem;
 }
 .comment p {
 	margin: 1rem 0;
@@ -147,7 +148,7 @@ section {
 	color: #0085a1;
 }
 .comment .actions__list ul {
-	transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+	transition: ease-in-out all .25s;
     position: absolute;
     right: 100%;
     top: 0;
@@ -157,10 +158,14 @@ section {
     margin-bottom: 0;
 	max-height: 0;
 	opacity: 0;
+	visibility: hidden;
+	outline: hidden;
+	z-index: -1;
 }
 .comment .actions__list.displayed ul {
-	max-height: none;
+	max-height: 155px;
 	opacity: 1;
+	visibility: visible;
 	z-index: 500;
 }
 .comment .actions__list li {
