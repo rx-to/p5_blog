@@ -182,7 +182,6 @@ class ControllerPost extends Controller
     public function generateCommentList($id)
     {
         $comments = $this->getComments($id);
-
         $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
         if (count($comments) > 0) {
             foreach ($comments as $comment) {
@@ -193,7 +192,6 @@ class ControllerPost extends Controller
                 // TODO: Manage user permissions. 
                 $html .=             '<nav class="actions__list">';
                 $html .=                 '<ul>';
-                $html .=                     '<li><a href="#reply-to-comment"">Répondre</a></li>';
                 $html .=                     '<li><a href="#edit-comment">Modifier</a></li>';
                 $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
                 $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';

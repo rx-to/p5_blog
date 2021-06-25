@@ -32,7 +32,6 @@
                         <input type="hidden" name="action" value="postComment">
                         <input type="hidden" name="comment_id" value="0">
                         <input type="hidden" name="post_id" value="<?= $data['post']['id'] ?>">
-                        <input type="hidden" name="reply_to_comment_id" value="0">
                         <div class="control-group">
                             <div class="ajax-form__alert" style="display: none;"></div>
                             <img src="/upload/avatars/avatar-1.png" alt="Avatar de prenom nom" class="comment__author-avatar">

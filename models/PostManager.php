@@ -14,14 +14,15 @@ class PostManager extends Model
 
         $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%e %M %Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                    FROM     `post_comment` pc 
-                   JOIN     `user`         u  ON pc.`author_id` = u.`id`
-                   WHERE    `post_id` = :post_id
+                   JOIN     `user`         u      ON pc.`author_id` = u.`id`
+                   WHERE    `post_id`              = :post_id
+                   AND      `status`               = 1
                    ORDER BY `creation_date` DESC";
         $stmt  = $db->prepare($query);
         $stmt->execute([':post_id' => $id]);
         $comments = [];
         while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $comment['user_slug']   = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
+            $comment['user_slug'] = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
             $comments[] = $comment;
         }
 
@@ -118,14 +119,13 @@ class PostManager extends Model
     public function insertComment($data)
     {
         $db     = $this->getDB();
-        $query  = "INSERT INTO `post_comment` (`author_id`, `reply_to_comment_id`, `post_id`, `content`, `status`) 
-                   VALUES (1, :reply_to_comment_id, :post_id, :content, 1)";
+        $query  = "INSERT INTO `post_comment` (`author_id`, `post_id`, `content`, `status`) 
+                   VALUES (1, :post_id, :content, 0)";
         $stmt   = $db->prepare($query);
 
         $params = [
-            ':reply_to_comment_id' => intval($data['reply_to_comment_id']) ? $data['reply_to_comment_id'] : null,
-            ':post_id'             => $data['post_id'],
-            ':content'             => $data['comment'],
+            ':post_id' => $data['post_id'],
+            ':content' => $data['comment'],
         ];
         return $stmt->execute($params);
     }
@@ -138,9 +138,9 @@ class PostManager extends Model
     public function updateComment($data)
     {
         $db     = $this->getDB();
-        $query  = "UPDATE `post_comment` SET `content` = :content, `update_date` = NOW(), `status` = 1 WHERE `id` = :comment_id";
+        $query  = "UPDATE `post_comment` SET `content` = :content, `update_date` = NOW(), `status` = 0 WHERE `id` = :comment_id";
         $params = [
-            ':content'    => $data['comment'], 
+            ':content'    => $data['comment'],
             ':comment_id' => $data['comment_id']
         ];
 

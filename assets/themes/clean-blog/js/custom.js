@@ -51,7 +51,7 @@ $(document).on("click", ".comment__nav-trigger", function (e) {
 
 // Hide comment action list.
 $(document).on("click", function (e) {
-	if ($(e.target).parent(".actions__list").length == 0) $(".actions__list").removeClass("displayed");
+	$(".actions__list").removeClass("displayed");
 });
 
 // Comment actions.
@@ -70,7 +70,7 @@ $(document).on("click", ".comment .actions a", function (e) {
 	switch (href) {
 		case "#delete-comment":
 			title = "Supprimer un commentaire";
-			content = '<p>Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?</p>';
+			content = "<p>Êtes-vous sûr(e) de vouloir supprimer ce commentaire ?</p>";
 			dataAction = "delete-comment";
 			dataAttr = { "post-id": postID, "comment-id": commentID };
 			modal = true;
@@ -90,11 +90,10 @@ $(document).on("click", ".comment .actions a", function (e) {
 			break;
 
 		case "#edit-comment":
-			let commentID = $(this).closest(".comment").attr("data-id");
 			let comment = $("#comment__content-" + commentID)
 				.html()
 				.replace(/<br>/, "");
-			$('input[name=comment_id]').val(commentID);
+			$("input[name=comment_id]").val(commentID);
 			$("#comment").html(comment);
 			$("html, body").animate({ scrollTop: $("#comment").offset().top - 67 }, 200);
 			break;

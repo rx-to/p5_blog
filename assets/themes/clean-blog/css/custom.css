@@ -7,11 +7,11 @@ h2.underline {
 }
 h2.underline::after {
 	content: "";
-    position: absolute;
-    bottom: -1rem;
-    left: 0;
-    right: 75%;
-    border-bottom: solid 5px #0085A1;
+	position: absolute;
+	bottom: -1rem;
+	left: 0;
+	right: 75%;
+	border-bottom: solid 5px #0085a1;
 }
 h2.underline-center::after {
 	left: 35.25%;
@@ -65,7 +65,7 @@ section {
 	width: calc(100% - (70px + 1rem));
 }
 .ajax-form .alert {
-    font-size: 1rem;
+	font-size: 1rem;
 }
 .alert p {
 	margin: 0;
@@ -129,7 +129,7 @@ section {
 	margin-bottom: 0;
 }
 .comment__date {
-	font-size: .9rem;
+	font-size: 1rem;
 }
 .comment__content {
 	margin: -5px 0;
@@ -140,22 +140,22 @@ section {
 	right: 0;
 }
 .comment .actions__wrapper {
-    position: relative;
-    font-size: 15px;
+	position: relative;
+	font-size: 15px;
 }
 .comment__nav-trigger:hover {
 	cursor: pointer;
 	color: #0085a1;
 }
 .comment .actions__list ul {
-	transition: ease-in-out all .25s;
-    position: absolute;
-    right: 100%;
-    top: 0;
-    display: inline-block;
-    padding: 0;
-    box-shadow: 0 0 5px #00000040;
-    margin-bottom: 0;
+	transition: ease-in-out all 0.25s;
+	position: absolute;
+	right: 100%;
+	top: 0;
+	display: inline-block;
+	padding: 0;
+	box-shadow: 0 0 5px #00000040;
+	margin-bottom: 0;
 	max-height: 0;
 	opacity: 0;
 	visibility: hidden;
@@ -169,8 +169,8 @@ section {
 	z-index: 500;
 }
 .comment .actions__list li {
-    list-style: none;
-    padding: .5rem 1rem;
+	list-style: none;
+	padding: 0.5rem 1rem;
 	background: #ffffff;
 }
 form button {
@@ -183,7 +183,8 @@ figcaption {
 	text-align: center;
 }
 @media (max-width: 575.98px) {
-	h2, h2.section-heading {
+	h2,
+	h2.section-heading {
 		font-size: 1.8rem;
 	}
 	#commentForm .comment__author-avatar {
