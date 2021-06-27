@@ -2,7 +2,6 @@
 
 class PostManager extends Model
 {
-
     /**
      * Returns post comments.
      * @param  int  $id Post ID.

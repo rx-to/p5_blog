@@ -12,7 +12,7 @@ class Model
      * Returns database connection.
      * @return PDO
      */
-    protected function getDB()
+    public function getDB()
     {
         if (!$this->_pdo)
             $this->_pdo = new PDO('mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME . ';charset=utf8mb4', self::DB_USER, self::DB_PASSWORD);

@@ -2,47 +2,42 @@
     <section>
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
-                <p>Remplissez le formulaire ci-dessous et je vous répondrai au plus vite ! 😉</p>
-                <form id="contactForm" name="sentMessage" novalidate>
+                <form id="registerForm" class="ajax-form">
+                    <input type="hidden" name="action" value="register">
                     <div class="control-group">
+                        <div class="ajax-form__alert" style="display: none;"></div>
                         <div class="form-group floating-label-form-group controls">
-                            <label>Nom</label>
+                            <label for="last_name">Nom</label>
                             <input class="form-control" id="last_name" name="last_name" type="text" placeholder="Votre nom..." required>
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls">
-                            <label>Prénom</label>
+                            <label for="first_name">Prénom</label>
                             <input class="form-control" id="first_name" name="first_name" type="text" placeholder="Votre prénom..." required>
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls">
-                            <label>E-mail</label>
+                            <label for="email">E-mail</label>
                             <input class="form-control" id="email" name="email" type="email" placeholder="Votre adresse e-mail..." required>
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="form-group col-xs-12 floating-label-form-group controls">
-                            <label>N° de téléphone</label>
-                            <input class="form-control" id="phone_number" name="phone_number" type="tel" placeholder="Votre n° de téléphone..." required>
+                            <label for="password">Mot de passe</label>
+                            <input class="form-control" id="password" name="password" type="password" placeholder="Votre mot de passe..." required>
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls">
-                            <label>Objet</label>
-                            <input class="form-control" id="subject" type="text" placeholder="Sujet de votre demande de contact...">
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="form-group floating-label-form-group controls">
-                            <label>Message</label>
-                            <textarea class="form-control" id="message" rows="5" placeholder="Votre message..." required></textarea>
+                            <label for="birthdate">Date de naissance</label>
+                            <input class="form-control" id="birthdate" name="birthdate" type="date" placeholder="Votre date de naissance..." required>
                         </div>
                     </div>
                     <br />
                     <div id="success"></div>
-                    <button class="btn btn-primary mt-0" id="sendMessageButton" type="submit">Envoyer</button>
+                    <button class="btn btn-primary mt-0" id="sendMessageButton" type="submit">Inscription</button>
                 </form>
             </div>
         </div>

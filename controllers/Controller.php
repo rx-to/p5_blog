@@ -113,9 +113,9 @@ class Controller
             if (count($errors) == 1) {
                 $alert .= "<p>{$errors[0]}</p>";
             } else {
-                $alert .= "<ul>";
+                $alert .= '<ul class="mb-0">';
                 foreach ($errors as $error) {
-                    $alert .= "</li>$error</li>";
+                    $alert .= "<li>$error</li>";
                 }
                 $alert .= "</ul>";
             }

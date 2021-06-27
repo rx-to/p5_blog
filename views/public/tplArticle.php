@@ -37,8 +37,7 @@
                             <img src="/upload/avatars/avatar-1.png" alt="Avatar de prenom nom" class="comment__author-avatar">
                             <div class="form-group floating-label-form-group controls">
                                 <label>Votre commentaire</label>
-                                <textarea class="form-control" id="comment" name="comment" rows="5" placeholder="Votre commentaire..." required data-validation-required-message="Veuillez saisir votre commentaire."></textarea>
-                                <p class="help-block text-danger"></p>
+                                <textarea class="form-control" id="comment" name="comment" rows="5" placeholder="Votre commentaire..." required></textarea>
                             </div>
                         </div>
                         <div id="success"></div>

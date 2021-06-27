@@ -10,12 +10,13 @@ function ajax(data) {
 		success: function (result) {
 			let json = JSON.parse(result);
 
-			// Empty inputs & textareas
-			$("input:not(input[type=hidden]), textarea").val("");
-
 			switch (data.get("action")) {
 				case "deleteComment":
 					$(".comment-list").html(json.comments);
+					break;
+				case "postComment":
+					// Empty inputs & textareas
+					$("input:not(input[type=hidden]), textarea").val("");
 					break;
 				default:
 					break;
@@ -82,7 +83,6 @@ $(document).on("click", ".comment .actions a", function (e) {
 			content += '<div class="form-group floating-label-form-group controls">';
 			content += "<label>Raison du signalement</label>";
 			content += '<textarea class="form-control" id="report" name="report" rows="2" placeholder="La raison de votre signalement..."></textarea>';
-			content += '<p class="help-block text-danger"></p>';
 			content += "</div>";
 			dataAction = "report-comment";
 			dataAttr = { "comment-id": commentID };

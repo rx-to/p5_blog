@@ -1,5 +1,7 @@
 <?php
+
 require_once 'models/PostManager.php';
+
 class ControllerPost extends Controller
 {
     function __construct()

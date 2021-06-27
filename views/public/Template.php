@@ -11,7 +11,8 @@
     echo '<title>' . $data['page']['meta_title'] . '</title>';
     ?>
     <link href="/assets/themes/clean-blog/favicon.ico" rel="icon" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"></link>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    </link>
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
     <link href="/assets/themes/clean-blog/css/style.css" rel="stylesheet">
@@ -30,8 +31,12 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item<?= in_array($slug, ['accueil']) ? ' active' : '' ?>"><a class="nav-link" href="/">Accueil</a></li>
                     <li class="nav-item<?= in_array($slug, ['articles', 'article']) ? ' active' : '' ?>"><a class="nav-link" href="/articles/">Articles</a></li>
-                    <!-- <li class="nav-item<?= in_array($slug, ['a-propos']) ? ' active' : '' ?>"><a class="nav-link" href="/a-propos/">À propos</a></li> -->
                     <li class="nav-item<?= in_array($slug, ['contact']) ? ' active' : '' ?>"><a class="nav-link" href="/contact/">Contact</a></li>
+                    <?php if (isset($_SESSION['user_id'])) { ?>
+                        <li class="nav-item"><a class="nav-link" href="#deconnexion">Déconnexion</a></li>
+                    <?php } else { ?>
+                        <li class="nav-item<?= in_array($slug, ['inscription', 'connexion']) ? ' active' : '' ?>"><a class="nav-link" href="/connexion/">Connexion</a></li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
