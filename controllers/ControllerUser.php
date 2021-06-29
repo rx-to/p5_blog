@@ -18,6 +18,8 @@ class controllerUser extends Controller
             }
             echo json_encode($json);
         }
+
+        if($_SERVER['REQUEST_URI'] == '/deconnexion/') $this->logout();
     }
 
     /**
@@ -25,7 +27,7 @@ class controllerUser extends Controller
      * @param array $data
      * @return string
      */
-    function register($data)
+    private function register($data)
     {
         $errors = [];
         $userManager = new UserManager();
@@ -36,18 +38,75 @@ class controllerUser extends Controller
         if (!Util::checkAge($data['birthdate']))            $errors[] = 'Vous devez être âgé(e) de 13 ans minimum afin de vous inscrire.';
         if (count($errors) == 0)
             if (!$userManager->insertUser($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-        
+
         return count($errors) > 0 ? $this->generateAlert($errors, null) : $this->storeInSession($userManager->getDB()->lastInsertId());
+    }
+
+    /**
+     * Logs in a user.
+     * @param array $data
+     * @return string
+     */
+    private function login($data)
+    {
+        $errors = [];
+        $userManager = new UserManager();
+        if ($data['email'] && $data['password']) {
+            if (!$this->checkCredentials($data['email'], $data['password'])) $errors[] = 'Vos identifiants sont incorects, veuillez réessayer.';
+            if (count($errors) == 0) {
+                $this->storeInSession($userManager->getDB()->lastInsertId());
+            }
+        } else {
+            $errors[] = "Veuillez remplir tous les champs.";
+        }
+
+        return $this->generateAlert($errors, '<script>document.location.href = "/";</script>');
+    }
+
+    /**
+     * Logs out a user.
+     * @return string
+     */
+    private function logout()
+    {
+        session_destroy();
+        session_unset();
+        header('Location: /');
+    }
+
+    /**
+     * Checks user credentials.
+     * @param string $email
+     * @param string $password
+     * @return bool
+     */
+    private function checkCredentials($email, $password)
+    {
+        $result = false;
+        if ($user = $this->getUser('email', $email))
+            $result = password_verify($password, $user['password']);
+
+        return $result;
+    }
+
+    /**
+     * Returns user data.
+     * @param string $column
+     * @param mixed  $value
+     * @return mixed
+     */
+    private function getUser($column, $value)
+    {
+        $userManager = new UserManager();
+        return $userManager->selectUser($column, $value);
     }
 
     /**
      * Stores user ID in session.
      * @param int $id User ID
      */
-    function storeInSession($id) {
+    private function storeInSession($id)
+    {
         $_SESSION['user_id'] = $id;
     }
-
-    
-
 }

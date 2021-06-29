@@ -65,4 +65,13 @@ class Util
         $birthdate = intval(date_format(new DateTime($birthdate), 'Ymd'));
         return ($today - $birthdate) / 10000 >= 13;
     }
+
+    /**
+     * Redirects to another page.
+     * @param string $target
+     * @param int    $delay
+     */
+    public static function redirect($target, $delay = 0) {
+        return "<script>setTimeout(function(){document.location.href='$target'}, $delay);</script>";
+    }
 }

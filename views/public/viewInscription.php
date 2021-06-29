@@ -2,7 +2,7 @@
     <section>
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
-                <form id="registerForm" class="ajax-form">
+                <form id="registerForm" class="ajax-form" method="post" action="">
                     <input type="hidden" name="action" value="register">
                     <div class="control-group">
                         <div class="ajax-form__alert" style="display: none;"></div>
@@ -35,10 +35,10 @@
                             <input class="form-control" id="birthdate" name="birthdate" type="date" placeholder="Votre date de naissance..." required>
                         </div>
                     </div>
-                    <br />
-                    <div id="success"></div>
-                    <button class="btn btn-primary mt-0" id="sendMessageButton" type="submit">Inscription</button>
+                    <br>
+                    <button class="btn btn-primary mt-0" id="sendMessageButton" type="submit">S'inscrire</button>
                 </form>
+                <p class="mb-0">Vous avez déjà un compte ? <a href="/connexion/">Connectez-vous</a>.</p>
             </div>
         </div>
     </section>

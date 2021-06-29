@@ -33,7 +33,7 @@
                     <li class="nav-item<?= in_array($slug, ['articles', 'article']) ? ' active' : '' ?>"><a class="nav-link" href="/articles/">Articles</a></li>
                     <li class="nav-item<?= in_array($slug, ['contact']) ? ' active' : '' ?>"><a class="nav-link" href="/contact/">Contact</a></li>
                     <?php if (isset($_SESSION['user_id'])) { ?>
-                        <li class="nav-item"><a class="nav-link" href="#deconnexion">Déconnexion</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/deconnexion/">Déconnexion</a></li>
                     <?php } else { ?>
                         <li class="nav-item<?= in_array($slug, ['inscription', 'connexion']) ? ' active' : '' ?>"><a class="nav-link" href="/connexion/">Connexion</a></li>
                     <?php } ?>

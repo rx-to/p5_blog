@@ -1,9 +1,9 @@
 // Send ajax form.
-function ajax(data) {
+function ajax(data, url = "") {
 	$.ajax({
 		type: "POST",
 		enctype: "multipart/form-data",
-		url: "",
+		url: url,
 		data: data,
 		processData: false,
 		contentType: false,

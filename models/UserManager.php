@@ -21,6 +21,22 @@ class UserManager extends Model
             ':password'   => password_hash($data['password'], PASSWORD_DEFAULT),
             ':birthdate'  => $data['birthdate']
         ];
+
         return $stmt->execute($params);
+    }
+
+    /**
+     * Returns user.
+     * @param string $column
+     * @param mixed  $value
+     * @return mixed
+     */
+    public function selectUser($column, $value)
+    {
+        $db    = $this->getDB();
+        $query = "SELECT * FROM `user` WHERE `$column` = :value";
+        $stmt  = $db->prepare($query);
+        $stmt->execute([':value' => $value]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
