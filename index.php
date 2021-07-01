@@ -23,7 +23,7 @@ try {
         // var_dump($visibility);
         // var_dump($id);
         // var_dump(get_class($controller));
-        var_dump($_SESSION);
+        // var_dump($_SESSION);
     }
 } catch (Exception $e) {
     $controller = new Controller();

@@ -1,6 +1,7 @@
 <?php
 
 require_once 'models/PostManager.php';
+require_once 'controllers/ControllerUser.php';
 
 class ControllerPost extends Controller
 {
@@ -143,11 +144,12 @@ class ControllerPost extends Controller
      */
     private function deleteComment($id)
     {
-        // TODO: Checks if user is admin or is comment's author
         $errors = [];
+        $userController = new ControllerUser();
         $postManager = new PostManager();
-        if (!$postManager->deleteComment($id)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-        return $this->generateAlert($errors, "Votre commentaire a été supprimé.");
+        $comment = $this->getComment($id);
+        if (!$postManager->deleteComment($id) || !$userController->isAdmin($_SESSION['user_id']) && $_SESSION['user_id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        return $this->generateAlert($errors, "Le commentaire a bien été supprimé.");
     }
 
     /**
@@ -177,14 +179,33 @@ class ControllerPost extends Controller
     }
 
     /**
+     * Returns post comment.
+     * @param  int   $id Comment ID.
+     * @return array 
+     */
+    private function getComment($id)
+    {
+        $postManager = new PostManager();
+        return $postManager->selectComment($id);
+    }
+
+    /**
      * Generates comment list.
      * @param  int   $id Post ID.
      * @return string      
      */
     public function generateCommentList($id)
     {
+        $userController = new controllerUser();
         $comments = $this->getComments($id);
         $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
+
+        if (!isset($_SESSION['user_id'])) {
+            $html .= '<div class="alert alert-warning">';
+            $html .= '<p class="mb-0">Vous devez être connecté(e) afin de commenter cet article.</p>';
+            $html .= '</div>';
+        }
+
         if (count($comments) > 0) {
             foreach ($comments as $comment) {
                 $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
@@ -194,9 +215,14 @@ class ControllerPost extends Controller
                 // TODO: Manage user permissions. 
                 $html .=             '<nav class="actions__list">';
                 $html .=                 '<ul>';
-                $html .=                     '<li><a href="#edit-comment">Modifier</a></li>';
-                $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
-                $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                if ($userController->isAdmin($_SESSION['user_id']) || $_SESSION['user_id'] == $comment['author_id']) {
+                    if ($_SESSION['user_id'] == $comment['author_id']) {
+                        $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
+                    }
+                    $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
+                } else {
+                    $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                }
                 $html .=                 '</ul>';
                 $html .=             '</nav>';
                 $html .=         '</div>';
@@ -213,9 +239,10 @@ class ControllerPost extends Controller
                 $html .= '</div>';
             }
         } else {
-            $html .= '<p>Soyez la première personne à commenter cet article ! 😜</p>';
+            if (isset($_SESSION['user_id'])) {
+                $html .= '<p>Soyez la première personne à commenter cet article ! 😜</p>';
+            }
         }
-
         return $html;
     }
 }

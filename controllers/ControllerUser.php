@@ -16,10 +16,10 @@ class controllerUser extends Controller
                     $json['alert'] = $this->login($_POST);
                     break;
             }
-            echo json_encode($json);
+            if (isset($json)) echo json_encode($json);
         }
 
-        if($_SERVER['REQUEST_URI'] == '/deconnexion/') $this->logout();
+        if ($_SERVER['REQUEST_URI'] == '/deconnexion/') $this->logout();
     }
 
     /**
@@ -54,13 +54,23 @@ class controllerUser extends Controller
         if ($data['email'] && $data['password']) {
             if (!$this->checkCredentials($data['email'], $data['password'])) $errors[] = 'Vos identifiants sont incorects, veuillez réessayer.';
             if (count($errors) == 0) {
-                $this->storeInSession($userManager->getDB()->lastInsertId());
+                $this->storeInSession($this->getUser('email', $data['email'])['id']);
             }
         } else {
             $errors[] = "Veuillez remplir tous les champs.";
         }
 
         return $this->generateAlert($errors, '<script>document.location.href = "/";</script>');
+    }
+
+    /**
+     * Checks if user is an admin.
+     * @param int $id
+     * @return bool
+     */
+    public function isAdmin($id)
+    {
+        return $this->getUser('id', $id)['type_id'] == 1;
     }
 
     /**
