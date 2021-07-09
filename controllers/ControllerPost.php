@@ -1,7 +1,6 @@
 <?php
 
-require_once 'models/PostManager.php';
-require_once 'controllers/ControllerUser.php';
+require 'models/PostManager.php';
 
 class ControllerPost extends Controller
 {
@@ -215,7 +214,7 @@ class ControllerPost extends Controller
                 // TODO: Manage user permissions. 
                 $html .=             '<nav class="actions__list">';
                 $html .=                 '<ul>';
-                if ($userController->isAdmin($_SESSION['user_id']) || $_SESSION['user_id'] == $comment['author_id']) {
+                if (isset($_SESSION['user_id']) && ($userController->isAdmin($_SESSION['user_id']) || $_SESSION['user_id'] == $comment['author_id'])) {
                     if ($_SESSION['user_id'] == $comment['author_id']) {
                         $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
                     }

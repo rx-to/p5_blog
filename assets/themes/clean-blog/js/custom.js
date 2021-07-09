@@ -15,6 +15,7 @@ function ajax(data, url = "") {
 					$(".comment-list").html(json.comments);
 					break;
 				case "postComment":
+				case "sendContact":
 					// Empty inputs & textareas
 					$("input:not(input[type=hidden]), textarea").val("");
 					break;

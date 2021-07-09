@@ -3,9 +3,9 @@
 class Model
 {
     private const DB_HOST     = 'localhost';
-    private const DB_USER     = 'root';
-    private const DB_PASSWORD = '';
-    private const DB_NAME     = 'p5_blog';
+    private const DB_USER     = 'u571467911_blog';
+    private const DB_PASSWORD = '9f?eWrxUJ*';
+    private const DB_NAME     = 'u571467911_blog';
     private $_pdo;
 
     /**

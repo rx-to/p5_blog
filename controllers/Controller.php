@@ -1,5 +1,7 @@
 <?php
 require 'models/Model.php';
+require 'controllers/ControllerUser.php';
+
 class Controller
 {
     /**
@@ -87,15 +89,16 @@ class Controller
      */
     public function displayView($visibility, $slug, $id = null)
     {
-        $file = $this->getView($visibility, $slug, $id);
-        $data = $this->getPageData($visibility, $slug, $id);
+        $controllerUser = new ControllerUser();
+        $file           = $this->getView($visibility, $slug, $id);
+        $data           = $this->getPageData($visibility, $slug, $id);
         if (!$data) throw new Exception('Pas de données pour cette URL', 404);
 
         ob_start();
         require_once $file;
         $content = ob_get_clean();
 
-        require_once 'views/public/Template.php';
+        require_once "views/$visibility/Template.php";
     }
 
     /**

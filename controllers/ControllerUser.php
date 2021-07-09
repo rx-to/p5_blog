@@ -1,6 +1,6 @@
 <?php
 
-require_once 'models/UserManager.php';
+require 'models/UserManager.php';
 
 class controllerUser extends Controller
 {
@@ -36,10 +36,14 @@ class controllerUser extends Controller
         if (!Util::checkStrLen($data['email'], 0, 255))     $errors[] = 'Votre adresse e-mail 3 et 255 caractères.';
         if (!Util::checkPassword($data['password']))        $errors[] = 'Votre mot de passe doit contenir au minimum 8 caractères dont une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial.';
         if (!Util::checkAge($data['birthdate']))            $errors[] = 'Vous devez être âgé(e) de 13 ans minimum afin de vous inscrire.';
-        if (count($errors) == 0)
-            if (!$userManager->insertUser($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        if (count($errors) == 0) {
+            if ($userManager->insertUser($data))
+                $this->storeInSession($userManager->getDB()->lastInsertId());
+            else
+                $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        }
 
-        return count($errors) > 0 ? $this->generateAlert($errors, null) : $this->storeInSession($userManager->getDB()->lastInsertId());
+        return $this->generateAlert($errors, '<script>document.location.href = "/";</script>');
     }
 
     /**

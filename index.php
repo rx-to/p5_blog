@@ -8,9 +8,14 @@ require_once 'controllers/Controller.php';
 $controller = new Controller();
 
 // Query strings
-$id         = $_GET['id'] ?? null;
+$id         = $_GET['id']         ?? null;
 $visibility = $_GET['visibility'] ?? 'public';
 $slug       = $_GET['slug']       ?? 'accueil';
+
+if ($visibility == 'public' && $slug == 'admin') {
+    $visibility = 'admin';
+    $slug       = 'accueil';
+}
 
 if ($controller2 = $controller->requireController($visibility, $slug))
     $controller = $controller2;
@@ -18,7 +23,7 @@ if ($controller2 = $controller->requireController($visibility, $slug))
 try {
     if (empty($_POST)) {
         $controller->displayView($visibility, $slug, $id);
-        // Debug
+        // // Debug
         // var_dump($slug);
         // var_dump($visibility);
         // var_dump($id);
@@ -27,5 +32,5 @@ try {
     }
 } catch (Exception $e) {
     $controller = new Controller();
-    $controller->displayView('public', '404');
+    $controller->displayView($visibility, '404');
 }

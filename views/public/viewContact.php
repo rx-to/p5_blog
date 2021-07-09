@@ -3,7 +3,9 @@
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
                 <p>Remplissez le formulaire ci-dessous et je vous répondrai au plus vite ! 😉</p>
-                <form id="contactForm" name="sentMessage" novalidate>
+                <form id="contactForm" class="ajax-form" method="post" action="/contact">
+                <div class="ajax-form__alert" style="display: none;"></div>
+                    <input type="hidden" name="action" value="sendContact">
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls">
                             <label>Nom</label>
@@ -23,21 +25,15 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="form-group col-xs-12 floating-label-form-group controls">
-                            <label>N° de téléphone</label>
-                            <input class="form-control" id="phone_number" name="phone_number" type="tel" placeholder="Votre n° de téléphone..." required>
-                        </div>
-                    </div>
-                    <div class="control-group">
                         <div class="form-group floating-label-form-group controls">
                             <label>Objet</label>
-                            <input class="form-control" id="subject" type="text" placeholder="Sujet de votre demande de contact...">
+                            <input class="form-control" id="subject" name="subject" type="text" placeholder="Sujet de votre demande de contact...">
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls">
                             <label>Message</label>
-                            <textarea class="form-control" id="message" rows="5" placeholder="Votre message..." required></textarea>
+                            <textarea class="form-control" id="message" name="message" rows="5" placeholder="Votre message..." required></textarea>
                         </div>
                     </div>
                     <br />
