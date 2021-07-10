@@ -1,6 +1,6 @@
 <?php
 
-require 'models/UserManager.php';
+require_once 'models/UserManager.php';
 
 class controllerUser extends Controller
 {
@@ -109,7 +109,7 @@ class controllerUser extends Controller
      * @param mixed  $value
      * @return mixed
      */
-    private function getUser($column, $value)
+    public function getUser($column, $value)
     {
         $userManager = new UserManager();
         return $userManager->selectUser($column, $value);

@@ -6,14 +6,19 @@
     RewriteCond %{REQUEST_URI} !-d
     RewriteCond %{REQUEST_URI} !-l
 
+    # Administration
+    RewriteRule ^admin/creer-un-article/$               index.php?visibility=admin&slug=detail-article&id=0     [QSA,L]
+    RewriteRule ^admin/editer-un-article/([0-9]+)/$     index.php?visibility=admin&slug=detail-article&id=$1    [QSA,L]
+    RewriteRule ^admin/contact/([0-9]+)/$               index.php?visibility=admin&slug=contact&id=$1           [QSA,L]
+    RewriteRule ^admin/(.*)/$                           index.php?visibility=admin&slug=$1                      [QSA,L]
+
+    # Public
     RewriteRule ^assets/(.*)$                           assets/$1                                               [QSA,L]
     RewriteRule ^upload/(.*)$                           upload/$1                                               [QSA,L]
     RewriteRule ^article/.*-([0-9]+)/$                  index.php?visibility=public&slug=article&id=$1          [QSA,L]
     RewriteRule ^articles/$                             articles/1/                                             [QSA,L]
     RewriteRule ^articles/([0-9]+)/$                    index.php?visibility=public&slug=articles&page_no=$1    [QSA,L]
-    RewriteRule ^admin/(.*)/$                           index.php?visibility=admin&slug=$1                      [QSA,L]
-    RewriteRule ^admin/creer-un-article/$               index.php?visibility=admin&slug=detail-article&id=0     [QSA,L]
-    RewriteRule ^admin/editer-un-article/([0-9]+)/$     index.php?visibility=admin&slug=detail-article&id=$1    [QSA,L]
     RewriteRule ^(.*)/$                                 index.php?visibility=public&slug=$1                     [QSA,L]
+
     ErrorDocument 404 /404/
 </IfModule>

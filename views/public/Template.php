@@ -32,8 +32,8 @@
                     <li class="nav-item<?= in_array($slug, ['accueil']) ? ' active' : '' ?>"><a class="nav-link" href="/">Accueil</a></li>
                     <li class="nav-item<?= in_array($slug, ['articles', 'article']) ? ' active' : '' ?>"><a class="nav-link" href="/articles/">Articles</a></li>
                     <li class="nav-item<?= in_array($slug, ['contact']) ? ' active' : '' ?>"><a class="nav-link" href="/contact/">Contact</a></li>
-                    <?php if (isset($_SESSION['user_id'])) { ?>
-                        <?php if($controllerUser->isAdmin($_SESSION['user_id'])) { ?>
+                    <?php if (isset($curUser['id'])) { ?>
+                        <?php if($controllerUser->isAdmin($curUser['id'])) { ?>
                             <li class="nav-item"><a class="nav-link" href="/admin/">Administration</a></li>
                         <?php } ?>
                         <li class="nav-item"><a class="nav-link" href="/deconnexion/">Déconnexion</a></li>
