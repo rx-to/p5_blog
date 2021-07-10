@@ -1,9 +1,9 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
+require_once 'models/ContactManager.php';
+require_once 'PHPMailer.php';
 
-require 'models/ContactManager.php';
-require 'PHPMailer.php';
+use PHPMailer\PHPMailer\PHPMailer;
 
 class ControllerContact extends Controller
 {
@@ -79,5 +79,36 @@ class ControllerContact extends Controller
         $mail->AltBody .= "Message : " . $data['message'];
 
         return $mail->send();
+    }
+
+    /**
+    * Returns contactlist.
+    * @return mixed
+    */
+    private function getContactList() {
+        $contactManager = new ContactManager();
+        return $contactManager->selectContacts();
+    }
+
+    /**
+    * Returns contactlist.
+    * @return mixed
+    */
+    private function getContact($id) {
+        $model = new Model();
+        return $model->selectFrom('contact', 'id', $id);
+    }
+
+    /**
+     * Returns current page data.
+     * @param  string $visibility
+     * @param  string $slug
+     * @param  int    $id
+     * @return array
+     */
+    protected function getPageData($visibility, $slug, $id = null)
+    {
+        $data  = $id ? $this->getContact($id) : $this->getContactList();
+        return $data;
     }
 }

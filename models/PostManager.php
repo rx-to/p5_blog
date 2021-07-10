@@ -11,7 +11,7 @@ class PostManager extends Model
     {
         $db    = $this->getDB();
 
-        $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%e %M %Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
+        $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%M/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%M/%Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                    FROM     `post_comment` pc 
                    JOIN     `user`         u      ON pc.`author_id` = u.`id`
                    WHERE    `post_id`              = :post_id
@@ -37,7 +37,7 @@ class PostManager extends Model
     {
         $db    = $this->getDB();
 
-        $query = "SELECT pc.*, DATE_FORMAT(pc.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%e %M %Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
+        $query = "SELECT pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%M/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%M/%Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                   FROM   `post_comment` pc 
                   JOIN   `user`         u  ON pc.`author_id` = u.`id`
                   WHERE  pc.`id`               = :id
@@ -57,7 +57,7 @@ class PostManager extends Model
     {
         $db     = $this->getDB();
         $db->query("SET lc_time_names = 'fr_FR'");
-        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%e %M %Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
+        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%M/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
                    LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id`
@@ -96,7 +96,7 @@ class PostManager extends Model
         $db     = $this->getDB();
 
         $db->query("SET lc_time_names = 'fr_FR'");
-        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%e %M %Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%e %M %Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
+        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%M/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%M/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
                    LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id`
@@ -135,10 +135,9 @@ class PostManager extends Model
      * @param string $data
      * @return bool
      */
-    public function insertComment($data)
+    public function insertComment($data, $userID)
     {
         $db     = $this->getDB();
-        $userID = $_SESSION['user_id'];
         $query  = "INSERT INTO `post_comment` (`author_id`, `post_id`, `content`, `status`) 
                    VALUES ($userID, :post_id, :content, 0)";
         $stmt   = $db->prepare($query);

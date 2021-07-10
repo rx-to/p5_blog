@@ -1,6 +1,7 @@
 <?php
-require 'models/Model.php';
-require 'controllers/ControllerUser.php';
+
+require_once 'models/Model.php';
+require_once 'controllers/ControllerUser.php';
 
 class Controller
 {
@@ -89,7 +90,11 @@ class Controller
      */
     public function displayView($visibility, $slug, $id = null)
     {
-        $controllerUser = new ControllerUser();
+        if (isset($_SESSION['user_id'])) {
+            $controllerUser = new ControllerUser();
+            $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+        }
+        
         $file           = $this->getView($visibility, $slug, $id);
         $data           = $this->getPageData($visibility, $slug, $id);
         if (!$data) throw new Exception('Pas de données pour cette URL', 404);

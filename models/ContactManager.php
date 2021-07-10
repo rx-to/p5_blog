@@ -23,4 +23,24 @@ class ContactManager extends Model
         ];
         return $stmt->execute($params);
     }
+
+    /**
+     * Returns contactlist.
+     * @return bool
+     */
+    public function selectContacts()
+    {
+        $db    = $this->getDB();
+
+        $query = "SELECT    *, DATE_FORMAT(`date`, '%d/%m/%Y à %Hh%i') `date_fr`
+                  FROM     `contact`
+                  ORDER BY `date` DESC";
+        $stmt  = $db->query($query);
+        $contacts = [];
+        while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $contacts[] = $comment;
+        }
+
+        return $contacts;
+    }
 }

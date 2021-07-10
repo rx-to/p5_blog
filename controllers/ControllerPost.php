@@ -1,6 +1,6 @@
 <?php
 
-require 'models/PostManager.php';
+require_once 'models/PostManager.php';
 
 class ControllerPost extends Controller
 {
@@ -116,7 +116,7 @@ class ControllerPost extends Controller
         $errors = [];
         if (strlen(strip_tags($data['comment'])) <= 3000) {
             $postManager = new PostManager();
-            if (!$postManager->insertComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+            if (!$postManager->insertComment($data, $curUser['id'])) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
             return $this->generateAlert($errors, "Votre commentaire a été envoyé. Il s'affichera après avoir été approuvé par un administrateur.");
         }
     }
@@ -147,7 +147,7 @@ class ControllerPost extends Controller
         $userController = new ControllerUser();
         $postManager = new PostManager();
         $comment = $this->getComment($id);
-        if (!$postManager->deleteComment($id) || !$userController->isAdmin($_SESSION['user_id']) && $_SESSION['user_id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        if (!$postManager->deleteComment($id) || !$userController->isAdmin($curUser['id']) && $curUser['id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
         return $this->generateAlert($errors, "Le commentaire a bien été supprimé.");
     }
 
@@ -199,7 +199,7 @@ class ControllerPost extends Controller
         $comments = $this->getComments($id);
         $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
 
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($curUser['id'])) {
             $html .= '<div class="alert alert-warning">';
             $html .= '<p class="mb-0">Vous devez être connecté(e) afin de commenter cet article.</p>';
             $html .= '</div>';
@@ -214,8 +214,8 @@ class ControllerPost extends Controller
                 // TODO: Manage user permissions. 
                 $html .=             '<nav class="actions__list">';
                 $html .=                 '<ul>';
-                if (isset($_SESSION['user_id']) && ($userController->isAdmin($_SESSION['user_id']) || $_SESSION['user_id'] == $comment['author_id'])) {
-                    if ($_SESSION['user_id'] == $comment['author_id']) {
+                if (isset($curUser['id']) && ($userController->isAdmin($curUser['id']) || $curUser['id'] == $comment['author_id'])) {
+                    if ($curUser['id'] == $comment['author_id']) {
                         $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
                     }
                     $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
@@ -238,7 +238,7 @@ class ControllerPost extends Controller
                 $html .= '</div>';
             }
         } else {
-            if (isset($_SESSION['user_id'])) {
+            if (isset($curUser['id'])) {
                 $html .= '<p>Soyez la première personne à commenter cet article ! 😜</p>';
             }
         }

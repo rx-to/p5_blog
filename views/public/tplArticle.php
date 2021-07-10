@@ -28,7 +28,7 @@
                 </nav>
                 <hr class="mt-0">
                 <section class="comments-section">
-                    <?php if (isset($_SESSION['user_id'])) { ?>
+                    <?php if (isset($curUser['id'])) { ?>
                         <form id="commentForm" class="ajax-form">
                             <input type="hidden" name="action" value="postComment">
                             <input type="hidden" name="comment_id" value="0">

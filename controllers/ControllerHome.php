@@ -1,5 +1,6 @@
 <?php
-require 'models/PostManager.php';
+
+require_once 'models/PostManager.php';
 
 class ControllerHome extends Controller
 {
@@ -47,25 +48,5 @@ class ControllerHome extends Controller
     protected function getPageData($visibility, $slug, $id = null)
     {
         return $this->getPostList(3);
-    }
-
-    /**
-     * Generates HTML of view.
-     * @param  string $visibility
-     * @param  string $slug
-     * @return string
-     */
-    public function displayView($visibility, $slug, $id = null)
-    {
-        $controllerUser = new ControllerUser();
-        $file           = $this->getView($visibility, $slug, $id);
-        $data           = $this->getPageData($visibility, $slug, $id);
-        if (!$data) throw new Exception('Pas de données pour cette URL', 404);
-
-        ob_start();
-        require_once $file;
-        $content = ob_get_clean();
-
-        require_once "views/$visibility/Template.php";
     }
 }
