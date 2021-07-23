@@ -17,9 +17,12 @@ class controllerUser extends Controller
                     break;
             }
             if (isset($json)) echo json_encode($json);
+        } elseif ($_SERVER['REQUEST_URI'] == '/deconnexion/') {
+            $this->logout();
+        } elseif ($_SERVER['REQUEST_URI'] == '/connexion/') {
+            if(isset($_SESSION['user_id'])) 
+                header('Location: /');
         }
-
-        if ($_SERVER['REQUEST_URI'] == '/deconnexion/') $this->logout();
     }
 
     /**
@@ -43,7 +46,7 @@ class controllerUser extends Controller
                 $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
         }
 
-        return $this->generateAlert($errors, '<script>document.location.href = "/";</script>');
+        return Util::generateAlert($errors, '<script>document.location.href = "/";</script>');
     }
 
     /**
@@ -64,7 +67,7 @@ class controllerUser extends Controller
             $errors[] = "Veuillez remplir tous les champs.";
         }
 
-        return $this->generateAlert($errors, '<script>document.location.href = "/";</script>');
+        return Util::generateAlert($errors, '<script>document.location.href = "/";</script>');
     }
 
     /**

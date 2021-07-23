@@ -68,10 +68,74 @@ class Util
 
     /**
      * Redirects to another page.
-     * @param string $target
-     * @param int    $delay
+     * @param string $target Target URL
+     * @param int    $delay  Delay in ms (1 second = 1000)
      */
-    public static function redirect($target, $delay = 0) {
+    public static function redirect($target, $delay = 0)
+    {
         return "<script>setTimeout(function(){document.location.href='$target'}, $delay);</script>";
+    }
+
+    /**
+     * Generates an alert.
+     * @param bool   $result `true` = success, `false` = error.
+     * @param array  $errors  Contains error messages.
+     * @param string $success Contains success message.
+     * @return string
+     */
+    public static function generateAlert($errors, $success)
+    {
+        $alert = '<div class="alert alert-' . (empty($errors) ? 'success' : 'danger') . '">';
+
+        if (!empty($errors)) {
+            if (count($errors) == 1) {
+                $alert .= "<p>{$errors[0]}</p>";
+            } else {
+                $alert .= '<ul class="mb-0">';
+                foreach ($errors as $error) {
+                    $alert .= "<li>$error</li>";
+                }
+                $alert .= "</ul>";
+            }
+        } else {
+            $alert .= "<p>$success</p>";
+        }
+        $alert .= '</div>';
+
+        return $alert;
+    }
+
+    /**
+     * Uploads image.
+     * @param array  $image
+     * @param string $folder
+     * @param string $name
+     * @return mixed
+     */
+    public static function uploadImage($image, $folder, $name)
+    {
+        $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
+        $path      = "upload/$folder/$name.$extension";
+        $errors    = [];
+
+        // Checks extension.
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'bmp'];
+        if (!in_array($extension, $allowedExtensions)) {
+            $extensions = '';
+            foreach ($allowedExtensions as $key => $extension) {
+                $extensions .= "<strong>.$extension</strong>";
+                $extensions .= isset($allowedExtensions[$key + 1]) ? ', ' : '.';
+            }
+            $errors[] = "Extensions prises en charge : $extensions";
+        }
+
+        if ($image['size'] > 5242880) $errors[] = "L'image doit être inférieure à 5 Mo.";
+        if ($image['error'] > 0)      $errors[] = 'Une erreur inattendue est survenue.';
+
+        if (count($errors) == 0)
+            // Image is uploadable
+            $result = move_uploaded_file($image['tmp_name'], $path);
+
+        return count($errors) == 0 ? $result : $errors;
     }
 }

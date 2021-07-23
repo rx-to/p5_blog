@@ -56,7 +56,7 @@ class PostManager extends Model
     public function getAll($limit = 5)
     {
         $db     = $this->getDB();
-        $db->query("SET lc_time_names = 'fr_FR'");
+
         $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%M/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
@@ -95,7 +95,6 @@ class PostManager extends Model
 
         $db     = $this->getDB();
 
-        $db->query("SET lc_time_names = 'fr_FR'");
         $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%M/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%M/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
@@ -146,6 +145,7 @@ class PostManager extends Model
             ':post_id' => $data['post_id'],
             ':content' => $data['comment'],
         ];
+
         return $stmt->execute($params);
     }
 
@@ -205,5 +205,39 @@ class PostManager extends Model
         $stmt   = $db->prepare($query);
         $params[':report'] = $report;
         return $stmt->execute($params);
+    }
+
+    /**
+     * Inserts post.
+     * @param string $data
+     * @return bool
+     */
+    public function insertPost($data, $userID)
+    {
+        $db     = $this->getDB();
+        $query  = "INSERT INTO `post` (`creation_author_id`, `title`, `introduction`, `image`, `content`, `status`) 
+                   VALUES ($userID, :title, :introduction, :image, :content, :status)";
+        $stmt   = $db->prepare($query);
+
+        $params = [
+            ':title'        => $data['title'],
+            ':introduction' => $data['introduction'],
+            ':image'        => $data['image'] ?? '',
+            ':content'      => $data['content'],
+            ':status'       => $data['status']
+        ];
+
+        return $stmt->execute($params);
+    }
+
+    /**
+     * Returns last post ID.
+     * @return int
+     */
+    public function getLastPostID()
+    {
+        $db    = $this->getDB();
+        $stmt  = $db->query("SELECT MAX(`id`) FROM `post`");
+        return $stmt->fetch(PDO::FETCH_COLUMN);
     }
 }

@@ -35,7 +35,7 @@
                             <input type="hidden" name="post_id" value="<?= $data['post']['id'] ?>">
                             <div class="control-group">
                                 <div class="ajax-form__alert" style="display: none;"></div>
-                                <img src="/upload/avatars/avatar-1.png" alt="Avatar de prenom nom" class="comment__author-avatar">
+                                <img src="/upload/avatar/avatar-1.png" alt="Avatar de prenom nom" class="comment__author-avatar">
                                 <div class="form-group floating-label-form-group controls">
                                     <label>Votre commentaire</label>
                                     <textarea class="form-control" id="comment" name="comment" rows="5" placeholder="Votre commentaire..." required></textarea>

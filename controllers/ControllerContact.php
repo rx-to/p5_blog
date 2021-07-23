@@ -36,7 +36,7 @@ class ControllerContact extends Controller
             $contactManager = new ContactManager();
             if (!$contactManager->insertContact($data) || !$this->sendEmail($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
         }
-        return $this->generateAlert($errors, "Votre demande de contact a bien été transmise.");
+        return Util::generateAlert($errors, "Votre demande de contact a bien été transmise.");
     }
 
     /**
@@ -108,7 +108,8 @@ class ControllerContact extends Controller
      */
     protected function getPageData($visibility, $slug, $id = null)
     {
-        $data  = $id ? $this->getContact($id) : $this->getContactList();
+        $data          = $id ? $this->getContact($id) : $this->getContactList();
+        $data['page']  = parent::getPageData($visibility, $slug)['page'];
         return $data;
     }
 }

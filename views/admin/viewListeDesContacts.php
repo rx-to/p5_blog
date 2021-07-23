@@ -16,23 +16,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data as $contact) {
-                        echo '<tr class="tr-shadow">';
-                        echo    '<td>' . $contact['date_fr'] . '</td>';
-                        echo    '<td>' . $contact['last_name'] . '</td>';
-                        echo    '<td>' . $contact['first_name'] . '</td>';
-                        echo    '<td>';
-                        echo        '<span class="block-email">' . $contact['email'] . '</span>';
-                        echo    '</td>';
-                        echo    '<td class="desc">' . $contact['subject'] . '</td>';
-                        echo    '<td>';
-                        echo        '<div class="table-data-feature">';
-                        echo            '<a href="/admin/contact/' . $contact['id'] . '/" class="item" data-toggle="tooltip" data-placement="top" title="Consulter">';
-                        echo                '<i class="fas fa-eye"></i>';
-                        echo            '</a>';
-                        echo        '</div>';
-                        echo    '</td>';
-                        echo '</tr>';
+                    <?php
+                    foreach ($data as $key => $contact) {
+                        if (is_int($key)) {
+                            echo '<tr class="tr-shadow">';
+                            echo    '<td>' . $contact['date_fr'] . '</td>';
+                            echo    '<td>' . $contact['last_name'] . '</td>';
+                            echo    '<td>' . $contact['first_name'] . '</td>';
+                            echo    '<td>';
+                            echo        '<span class="block-email">' . $contact['email'] . '</span>';
+                            echo    '</td>';
+                            echo    '<td class="desc">' . $contact['subject'] . '</td>';
+                            echo    '<td>';
+                            echo        '<div class="table-data-feature">';
+                            echo            '<a href="/admin/contact/' . $contact['id'] . '/" class="item" data-toggle="tooltip" data-placement="top" title="Consulter">';
+                            echo                '<i class="fas fa-eye"></i>';
+                            echo            '</a>';
+                            echo        '</div>';
+                            echo    '</td>';
+                            echo '</tr>';
+                        }
                     } ?>
                 </tbody>
             </table>

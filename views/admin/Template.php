@@ -164,7 +164,7 @@
                                 <div class="account-wrap">
                                     <div class="account-item clearfix js-item-menu">
                                         <div class="image">
-                                            <img src="/upload/avatars/<?= $curUser['avatar'] ?>" alt="<?= "{$curUser['first_name']} {$curUser['last_name']}" ?>" />
+                                            <img src="/upload/avatar/<?= $curUser['avatar'] ?>" alt="<?= "{$curUser['first_name']} {$curUser['last_name']}" ?>" />
                                         </div>
                                         <div class="content">
                                             <a class="js-acc-btn" href="#"><?= "{$curUser['first_name']} {$curUser['last_name']}" ?></a>
@@ -173,7 +173,7 @@
                                             <div class="info clearfix">
                                                 <div class="image">
                                                     <a href="#">
-                                                        <img src="/upload/avatars/<?= $curUser['avatar'] ?>" alt="<?= "{$curUser['first_name']} {$curUser['last_name']}" ?>" />
+                                                        <img src="/upload/avatar/<?= $curUser['avatar'] ?>" alt="<?= "{$curUser['first_name']} {$curUser['last_name']}" ?>" />
                                                     </a>
                                                 </div>
                                                 <div class="content">
@@ -234,6 +234,15 @@
 
     <!-- Main JS-->
     <script src="/assets/themes/cool-admin/js/main.js"></script>
+    <script src="/assets/themes/cool-admin/js/custom.js"></script>
+    <script src="https://cdn.tiny.cloud/1/i6qvw9jnrrrclkm5lgxqbhpoanylmmqkc5pwufyo7eji4bce/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+            toolbar_mode: 'floating',
+        });
+    </script>
 
 </body>
 

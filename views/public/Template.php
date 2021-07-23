@@ -44,7 +44,7 @@
             </div>
         </div>
     </nav>
-
+    
     <header class="masthead" style="background-image: url('/assets/themes/clean-blog/img/<?= $data['page']['header'] ?>')">
         <div class="overlay"></div>
         <div class="container">

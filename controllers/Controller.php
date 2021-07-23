@@ -105,33 +105,4 @@ class Controller
 
         require_once "views/$visibility/Template.php";
     }
-
-    /**
-     * Generates an alert.
-     * @param bool   $result `true` = success, `false` = error.
-     * @param array  $errors  Contains error messages.
-     * @param string $success Contains success message.
-     * @return string
-     */
-    protected function generateAlert($errors, $success)
-    {
-        $alert = '<div class="alert alert-' . (empty($errors) ? 'success' : 'danger') . '">';
-
-        if (!empty($errors)) {
-            if (count($errors) == 1) {
-                $alert .= "<p>{$errors[0]}</p>";
-            } else {
-                $alert .= '<ul class="mb-0">';
-                foreach ($errors as $error) {
-                    $alert .= "<li>$error</li>";
-                }
-                $alert .= "</ul>";
-            }
-        } else {
-            $alert .= "<p>$success</p>";
-        }
-        $alert .= '</div>';
-
-        return $alert;
-    }
 }
