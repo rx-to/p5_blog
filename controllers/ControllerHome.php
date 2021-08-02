@@ -24,8 +24,8 @@ class ControllerHome extends Controller
                 'postlist' => $postlist,
                 'page'     => [
                     'meta_title'       => $page[0]['meta_title'],
-                    // 'meta_description' => $page[0]['meta_description'],
-                    // 'meta_keywords'    => $page[0]['meta_keywords'],
+                    'meta_description' => $page[0]['meta_description'],
+                    'meta_keywords'    => $page[0]['meta_keywords'],
                     'title'            => $page[0]['title'],
                     'subtitle'         => $page[0]['subtitle'],
                     'header'           => $page[0]['header'],

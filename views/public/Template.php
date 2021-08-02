@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php
-    echo isset($data['page']['meta_description']) ? '<meta name="description" content="' . $data['page']['meta_description'] . '">' : '';
-    echo isset($data['page']['meta_keywords'])    ? '<meta name="keywords" content="' . $data['page']['meta_keywords'] . '">'       : '';
+    echo $data['page']['meta_description'] ? '<meta name="description" content="' . $data['page']['meta_description'] . '">' : '';
+    echo $data['page']['meta_keywords']    ? '<meta name="keywords" content="' . $data['page']['meta_keywords'] . '">'       : '';
     echo '<title>' . $data['page']['meta_title'] . '</title>';
     ?>
     <link href="/assets/themes/clean-blog/favicon.ico" rel="icon" type="image/x-icon">

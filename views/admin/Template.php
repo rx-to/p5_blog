@@ -5,13 +5,11 @@
     <!-- Required meta tags-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="au theme template">
-    <meta name="author" content="Hau Nguyen">
-    <meta name="keywords" content="au theme template">
-
-    <!-- Title Page-->
-    <title>Dashboard</title>
-
+    <?php
+    echo $data['page']['meta_description'] ? '<meta name="description" content="' . $data['page']['meta_description'] . '">' : '';
+    echo $data['page']['meta_keywords']    ? '<meta name="keywords" content="' . $data['page']['meta_keywords'] . '">'       : '';
+    echo '<title>' . $data['page']['meta_title'] . '</title>';
+    ?>
     <!-- Fontfaces CSS-->
     <link href="/assets/themes/cool-admin/css/font-face.css" rel="stylesheet" media="all">
     <link href="/assets/themes/cool-admin/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">

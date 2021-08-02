@@ -4,6 +4,8 @@
                             <form action="/<?= $id == 0 ? 'creer-un-article' : 'editer-un-articler' ?>" method="post" enctype="multipart/form-data" class="form-horizontal ajax-form">
                                 <div class="card-body card-block">
                                     <input type="hidden" name="action" value="<?= $id == 0 ? 'create' : 'edit' ?>Post">
+                                    <input type="hidden" name="id" value="<?= $id ?>">
+                                    <input type="hidden" name="image" value="<?= $data['post']['image'] ?? '' ?>">
                                     <div class="ajax-form__alert"></div>
                                     <div class="row form-group">
                                         <div class="col col-md-3">
@@ -32,12 +34,10 @@
                                         </div>
                                         <div class="col-12 col-md-9">
                                             <?php
-                                            if (isset($data['post']['image']) && $data['post']['image']) {
-                                                echo '<input type="hidden" name="photo" value="' . ($data['post']['image'] ?? '') . '">';
-                                                echo '<img src="/upload/post/' . ($data['post']['image'] ?? '') . '" alt="Bandeau de l\'article «  ' . ($data['post']['title'] ?? '') . ' »">';
-                                            } else {
+                                            if (isset($data['post']['image']) && $data['post']['image'])
+                                                echo '<img src="/upload/post/' . ($data['post']['image'] ?? '') . '" alt="Bandeau de l\'article «  ' . ($data['post']['title'] ?? '') . ' »" class="img-fluid max-height-300">';
+                                            else
                                                 echo '<input type="file" id="uploadImage" name="uploadImage" class="form-control-file">';
-                                            }
                                             ?>
                                         </div>
                                     </div>

@@ -30,6 +30,11 @@ class ControllerPost extends Controller
                 case 'editPost':
                     $json['alert'] = $this->editPost($_POST);
                     break;
+
+                case 'deletePost':
+                    $json['alert']    = $this->deletePost($_POST['post_id']);
+                    $json['postlist'] = $this->generatePostList(20);
+                    break;
             }
             echo json_encode($json);
         }
@@ -81,7 +86,7 @@ class ControllerPost extends Controller
     protected function getPageData($visibility, $slug, $id = null)
     {
         $postManager = new PostManager();
-        $page        = $postManager->selectPage($visibility, 'article');
+        $page        = $postManager->selectPage($visibility, $slug);
         $pageNo      = $_GET['page_no'] ?? 1;
         $limit       = $visibility == 'public' ? 5 : 20;
 
@@ -99,8 +104,8 @@ class ControllerPost extends Controller
             $data['postlist'] = $this->getPostList($limit);
             $data['page'] = [
                 'meta_title'       => str_replace('{% page_no %}', $pageNo, $page[0]['meta_title']),
-                // 'meta_description' => $page[0]['meta_description'],
-                // 'meta_keywords'    => $page[0]['meta_keywords'],
+                'meta_description' => str_replace('{% page_no %}', $pageNo, $page[0]['meta_description']),
+                'meta_keywords'    => $page[0]['meta_keywords'],
                 'title'            => $page[0]['title'],
                 'subtitle'         => $page[0]['subtitle'],
                 'header'           => $page[0]['header'],
@@ -157,6 +162,19 @@ class ControllerPost extends Controller
         $comment        = $this->getComment($id);
         if (!$postManager->deleteComment($id) || !$controllerUser->isAdmin($curUser['id']) && $curUser['id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
         return Util::generateAlert($errors, "Le commentaire a bien été supprimé.");
+    }
+
+    /**
+     * Deletes post.
+     * @param  int    $id
+     * @return string
+     */
+    private function deletePost($id)
+    {
+        $errors         = [];
+        $postManager    = new PostManager();
+        if (!$postManager->deletePost($id)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter le webmaster si le problème persiste.';
+        return Util::generateAlert($errors, "L'article a bien été supprimé.");
     }
 
     /**
@@ -256,32 +274,94 @@ class ControllerPost extends Controller
     }
 
     /**
+     * Generates post list.
+     * @param int     $limit
+     * @return string      
+     */
+    public function generatePostList($limit = null)
+    {
+        $postlist = $this->getPostList($limit);
+        $html     = '';
+        foreach ($postlist as $key => $post) {
+            if (is_numeric($key)) {
+                $html .= '<tr class="tr-shadow post" data-id="' . $post['id'] . '">';
+                $html .=    '<td>' . $post['title'] . '</td>';
+                $html .=    '<td>' . "{$post['author_first_name']} {$post['author_last_name']}" . '</td>';
+                $html .=    '<td><span class="block-email">' . $post['creation_date_fr'] . '</span></td>';
+                $html .=    '<td><span class="block-email">' . $post['update_date_fr'] . '</span></td>';
+                $html .=    '<td>';
+                $html .=        '<div class="table-data-feature">';
+                $html .=            '<a href="/admin/editer-un-article/' . $post['id'] . '/" class="item" title="Éditer"><i class="zmdi zmdi-edit"></i></a>';
+                $html .=            '<a href="#delete-post" class="item" data-toggle="modal" data-target="#staticBackdrop" title="Supprimer"><i class="zmdi zmdi-delete"></i></a>';
+                $html .=        '</div>';
+                $html .=    '</td>';
+                $html .= '</tr>';
+                $html .= '<tr class="spacer"></tr>';
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Creates or update a post.
+     * @param array  $data
+     * @param string $action
+     * @return bool
+     */
+    private function processPost($data, $action)
+    {
+        $controllerUser = new ControllerUser();
+        $postManager    = new PostManager();
+        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+        $errors         = [];
+        $defaultError   = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+
+        if (isset($data['uploadImage'])) {
+            $data['image']  = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
+            $uploadImage   = Util::uploadImage($_FILES['uploadImage'], 'post', $data['image']);
+            if ($uploadImage !== true) {
+                if (is_array($uploadImage)) {
+                    foreach ($uploadImage as $error) {
+                        $errors[] = $error;
+                    }
+                }
+            }
+        }
+
+        if (!Util::checkStrLen($data['title'], 3, 255))        $errors[] = 'Veuillez saisir un titre entre 3 et 255 caractères.';
+        if (!Util::checkStrLen($data['title'], 3, 1000))       $errors[] = 'Veuillez saisir un titre entre 3 et 1 000 caractères.';
+        if (!Util::checkStrLen($data['title'], 3, 20000))      $errors[] = 'Veuillez saisir un contenu entre 3 et 20 000 caractères.';
+
+        if (count($errors) == 0) {
+            $alert = Util::generateAlert($errors, "L'article a bien été créé.");
+            if ($action == 'create') {
+                if (!$postManager->insertPost($data, $curUser['id'])) $errors[] = $defaultError;
+            } else {
+                $alert = Util::generateAlert($errors, "Les modifications ont bien été prises en compte.");
+                if (!$postManager->updatePost($data, $curUser['id'])) $errors[] = $defaultError;
+            }
+        }
+        return $alert . Util::redirect('/admin/liste-des-articles/', 3000);
+    }
+
+    /**
      * Creates a post.
      * @param array $data
      * @return bool
      */
     private function createPost($data)
     {
-        $controllerUser = new ControllerUser();
-        $postManager    = new PostManager();
-        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
-        $errors         = [];
-        $data['image']  = $postManager->getLastPostID() . '-' . Util::slugify($data['title']);
-        $uploadImage    = Util::uploadImage($_FILES['uploadImage'], 'post', $data['image']);
+        return $this->processPost($data, 'create');
+    }
 
-        if ($uploadImage !== true) {
-            if (is_array($uploadImage)) {
-                foreach ($uploadImage as $error) {
-                    $errors[] = $error;
-                }
-            } 
-        }
-
-        if (!Util::checkStrLen($data['title'], 3, 255))        $errors[] = 'Veuillez saisir un titre entre 3 et 255 caractères.';
-        if (!Util::checkStrLen($data['title'], 3, 1000))       $errors[] = 'Veuillez saisir un titre entre 3 et 1 000 caractères.';
-        if (!Util::checkStrLen($data['title'], 3, 20000))      $errors[] = 'Veuillez saisir un contenu entre 3 et 20 000 caractères.';
-        if (count($errors) == 0)
-            if (!$postManager->insertPost($data, $curUser['id']))  $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-        return Util::generateAlert($errors, "L'article « {$data['title']} » a bien été créé." . Util::redirect('/admin/liste-des-articles/', 3000));
+    /**
+     * Edits a post.
+     * @param array $data
+     * @return bool
+     */
+    private function editPost($data)
+    {
+        return $this->processPost($data, 'edit');
     }
 }
