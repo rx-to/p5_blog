@@ -317,8 +317,8 @@ class ControllerPost extends Controller
         $errors         = [];
         $defaultError   = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
 
-        if (isset($data['uploadImage'])) {
-            $data['image']  = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
+        if (isset($_FILES['uploadImage'])) {
+            $data['image'] = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
             $uploadImage   = Util::uploadImage($_FILES['uploadImage'], 'post', $data['image']);
             if ($uploadImage !== true) {
                 if (is_array($uploadImage)) {
@@ -329,9 +329,9 @@ class ControllerPost extends Controller
             }
         }
 
-        if (!Util::checkStrLen($data['title'], 3, 255))        $errors[] = 'Veuillez saisir un titre entre 3 et 255 caractères.';
-        if (!Util::checkStrLen($data['title'], 3, 1000))       $errors[] = 'Veuillez saisir un titre entre 3 et 1 000 caractères.';
-        if (!Util::checkStrLen($data['title'], 3, 20000))      $errors[] = 'Veuillez saisir un contenu entre 3 et 20 000 caractères.';
+        if (!Util::checkStrLen($data['title'], 3, 255))   $errors[] = 'Veuillez saisir un titre entre 3 et 255 caractères.';
+        if (!Util::checkStrLen($data['title'], 3, 1000))  $errors[] = 'Veuillez saisir un titre entre 3 et 1 000 caractères.';
+        if (!Util::checkStrLen($data['title'], 3, 20000)) $errors[] = 'Veuillez saisir un contenu entre 3 et 20 000 caractères.';
 
         if (count($errors) == 0) {
             $alert = Util::generateAlert($errors, "L'article a bien été créé.");
@@ -342,6 +342,7 @@ class ControllerPost extends Controller
                 if (!$postManager->updatePost($data, $curUser['id'])) $errors[] = $defaultError;
             }
         }
+
         return $alert . Util::redirect('/admin/liste-des-articles/', 3000);
     }
 
