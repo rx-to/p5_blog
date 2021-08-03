@@ -2,6 +2,32 @@
 	max-height: 300px;
 }
 
+.img-container {
+	position: relative;
+	display: inline-block;
+}
+
+.img-delete {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: #333333a6;
+    color: wheat;
+    font-size: 4rem;
+	opacity: 0;
+	visibility: hidden;
+}
+
+.img-container:hover .img-delete {
+	opacity: 1;
+	visibility: visible;
+}
+
 @media (max-width: 991px) {
 	.header-desktop {
 		height: 70px;

@@ -105,28 +105,28 @@ class PostManager extends Model
         $stmt   = $db->prepare($query);
         $stmt->execute([':id' => $id]);
 
-        if ($postlist = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $postlist['slug'] = Util::slugify($postlist['title'] . '-' . $postlist['id']);
+        if ($post = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $post['slug'] = Util::slugify($post['title'] . '-' . $post['id']);
 
             // Comments
-            $postlist['comments'] = $this->selectComments($id);
+            $post['comments'] = $this->selectComments($id);
 
             // Previous article slug
             $query = "SELECT `id`, `title` FROM `post` WHERE `id` < :id ORDER BY `creation_date` DESC LIMIT 1";
             $stmt  = $db->prepare($query);
             $stmt->execute([':id' => $id]);
             if ($previous = $stmt->fetch(PDO::FETCH_ASSOC))
-                $postlist['previous'] = Util::slugify("{$previous['title']}-{$previous['id']}");
+                $post['previous'] = Util::slugify("{$previous['title']}-{$previous['id']}");
 
             // Next article slug
             $query = "SELECT `id`, `title` FROM `post` WHERE `id` > :id ORDER BY `creation_date` ASC LIMIT 1";
             $stmt  = $db->prepare($query);
             $stmt->execute([':id' => $id]);
             if ($next = $stmt->fetch(PDO::FETCH_ASSOC))
-                $postlist['next'] = Util::slugify("{$next['title']}-{$next['id']}");
+                $post['next'] = Util::slugify("{$next['title']}-{$next['id']}");
         }
 
-        return $postlist ? $postlist : false;
+        return $post ? $post : false;
     }
 
     /**
@@ -191,6 +191,19 @@ class PostManager extends Model
         $query = "DELETE FROM `post` WHERE `id` = :id";
         $stmt  = $db->prepare($query);
         return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Deletes post image.
+     * @param  int  $postID
+     * @return bool
+     */
+    public function deleteImage($postID)
+    {
+        $db    = $this->getDB();
+        $query = "UPDATE `post` SET `image` = NULL WHERE `id` = :id";
+        $stmt  = $db->prepare($query);
+        return $stmt->execute([':id' => $postID]);
     }
 
     /**

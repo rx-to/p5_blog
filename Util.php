@@ -129,13 +129,28 @@ class Util
             $errors[] = "Extensions prises en charge : $extensions";
         }
 
-        if ($image['size'] > 5242880) $errors[] = "L'image doit être inférieure à 5 Mo.";
-        if ($image['error'] > 0)      $errors[] = 'Une erreur inattendue est survenue.';
+        if ($image['size'] > 5242880)                                              $errors[] = "L'image doit être inférieure à 5 Mo.";
+        if ($image['error'] > 0 || !move_uploaded_file($image['tmp_name'], $path)) $errors[] = 'Une erreur inattendue est survenue.';
+    
+        return count($errors) == 0 ? "$name.$extension" : $errors;
+    }
 
-        if (count($errors) == 0)
-            // Image is uploadable
-            $result = move_uploaded_file($image['tmp_name'], $path);
+    /**
+     * Deletes file.
+     * @param string $path
+     * @return mixed
+     */
+    public static function deleteFile($path)
+    {
+        $errors = [];
 
-        return count($errors) == 0 ? $result : $errors;
+        // Checks if file exists.
+        if (is_file($path)) {
+            if (!unlink($path)) $errors[] = "Une erreur est survenue, veuillez réessayer ou contacter le webmaster si le problème persiste.";
+        } else {
+            $errors[] = "Le fichier <strong>`$path`</strong> n'existe pas.";
+        }
+
+        return count($errors) == 0 ? true : $errors;
     }
 }

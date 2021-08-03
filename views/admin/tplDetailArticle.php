@@ -1,4 +1,4 @@
-                <div class="section__content section__content--p30">
+                <div class="section__content section__content--p30 post" <?= $data['post']['id'] ? 'data-id="' . $data['post']['id'] . '"' : '' ?>>
                     <div class="container-fluid">
                         <div class="card">
                             <form action="/<?= $id == 0 ? 'creer-un-article' : 'editer-un-articler' ?>" method="post" enctype="multipart/form-data" class="form-horizontal ajax-form">
@@ -32,12 +32,16 @@
                                         <div class="col col-md-3">
                                             <label for="uploadImage" class="form-control-label">Bandeau</label>
                                         </div>
-                                        <div class="col-12 col-md-9">
+                                        <div class="col-12 col-md-9 uploadImage-container">
                                             <?php
-                                            if (isset($data['post']['image']) && $data['post']['image'])
-                                                echo '<img src="/upload/post/' . ($data['post']['image'] ?? '') . '" alt="Bandeau de l\'article «  ' . ($data['post']['title'] ?? '') . ' »" class="img-fluid max-height-300">';
-                                            else
+                                            if (isset($data['post']['image']) && $data['post']['image']) {
+                                                echo '<a href="#delete-image" class="img-container" title="Supprimer l\'image" data-toggle="modal" data-target="#staticBackdrop">';
+                                                echo     '<img src="/upload/post/' . ($data['post']['image'] ?? '') . '" alt="Bandeau de l\'article «  ' . ($data['post']['title'] ?? '') . ' »" class="img-fluid max-height-300">';
+                                                echo     '<div class="img-delete"><i class="fa fa-times"></i></div>';
+                                                echo '</a>';
+                                            } else {
                                                 echo '<input type="file" id="uploadImage" name="uploadImage" class="form-control-file">';
+                                            }
                                             ?>
                                         </div>
                                     </div>
@@ -73,6 +77,24 @@
                                 </div>
                             </form>
 
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body"></div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                                <button type="button" class="btn btn-primary btn-yes" data-dismiss="modal">Oui</button>
+                            </div>
                         </div>
                     </div>
                 </div>

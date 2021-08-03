@@ -35,6 +35,11 @@ class ControllerPost extends Controller
                     $json['alert']    = $this->deletePost($_POST['post_id']);
                     $json['postlist'] = $this->generatePostList(20);
                     break;
+
+                case 'deleteImage':
+                    $json['alert'] = $this->deleteImage($_POST['post_id']);
+                    $json['inputFile']  = $this->generateInputFile('uploadImage');
+                    break;
             }
             echo json_encode($json);
         }
@@ -178,6 +183,26 @@ class ControllerPost extends Controller
     }
 
     /**
+     * Deletes image from post.
+     * @param  int    $postID
+     * @return string
+     */
+    private function deleteImage($postID)
+    {
+        $errors      = [];
+        $postManager = new PostManager();
+        $post        = $this->getPost($postID);
+        $deleteImage = Util::deleteFile("upload/post/{$post['image']}");
+        if (is_array($deleteImage)) {
+            foreach ($deleteImage as $error) {
+                $errors[] = $error;
+            }
+        }
+        if ($deleteImage !== true && !$postManager->deleteImage($postID)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter le webmaster si le problème persiste.';
+        return Util::generateAlert($errors, "L'image a bien été supprimée.");
+    }
+
+    /**
      * Reports comment.
      * @param  int    $id
      * @return string
@@ -318,14 +343,14 @@ class ControllerPost extends Controller
         $defaultError   = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
 
         if (isset($_FILES['uploadImage'])) {
-            $data['image'] = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
-            $uploadImage   = Util::uploadImage($_FILES['uploadImage'], 'post', $data['image']);
-            if ($uploadImage !== true) {
-                if (is_array($uploadImage)) {
-                    foreach ($uploadImage as $error) {
-                        $errors[] = $error;
-                    }
+            $filename    = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
+            $uploadImage = Util::uploadImage($_FILES['uploadImage'], 'post', $filename);
+            if (is_array($uploadImage)) {
+                foreach ($uploadImage as $error) {
+                    $errors[] = $error;
                 }
+            } else {
+                $data['image'] = $uploadImage;
             }
         }
 
@@ -364,5 +389,15 @@ class ControllerPost extends Controller
     private function editPost($data)
     {
         return $this->processPost($data, 'edit');
+    }
+
+    /**
+     * Generates image input.
+     * @param string $name
+     * @return string
+     */
+    private function generateInputFile($name)
+    {
+        return '<input type="file" id="' . $name . '" name="' . $name . '">' . "\n";
     }
 }

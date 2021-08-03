@@ -14,6 +14,9 @@ function ajax(data, url = "") {
 				case "deletePost":
 					$(".post-list").html(json.postlist);
 					break;
+				case "deleteImage":
+					$(".uploadImage-container").html(json.inputFile);
+					break;
 				default:
 					break;
 			}
@@ -68,6 +71,14 @@ $("a[data-toggle=modal]").on("click", function (e) {
 			modal = true;
 			break;
 
+		case "#delete-image":
+			title = "Supprimer l'image";
+			content = "<p>Êtes-vous sûr(e) de vouloir supprimer cette image ?</p>";
+			dataAction = "delete-image";
+			dataAttr = { "post-id": postID };
+			modal = true;
+			break;
+
 		// case "#report-comment":
 		// 	title = "Signaler un commentaire";
 		// 	content = "<p>Pour quelle(s) raison(s) souhaitez-vous signaler ce commentaire ?</p>";
@@ -115,6 +126,10 @@ $(document).on("click", ".modal .btn-yes", function () {
 			break;
 		case "delete-post":
 			data.append("action", "deletePost");
+			data.append("post_id", postID);
+			break;
+		case "delete-image":
+			data.append("action", "deleteImage");
 			data.append("post_id", postID);
 			break;
 	}
