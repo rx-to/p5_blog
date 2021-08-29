@@ -12,8 +12,7 @@
                                 <h3 class="post-subtitle"><?= $post['introduction'] ?></h3>
                             </a>
                             <p class="post-meta">
-                                Posté le <?= $post['creation_date_fr'] ?> par
-                                <a href="/utilisateur/<?= $post['user_slug'] ?>/"><?= $post['author_first_name'] . ' ' . $post['author_last_name'] ?></a>
+                                <?= !$post['update_date'] ? "Posté le {$post['creation_date_fr']}" : "Modifié le {$post['update_date_fr']}" ?> par <?= $post['author_first_name'] . ' ' . $post['author_last_name'] ?>
                             </p>
                             <p class="post-comments"><i class="far fa-comment mr-3"></i><?= "{$post['number_of_comments']} $commentWord" ?></p>
                         </div>

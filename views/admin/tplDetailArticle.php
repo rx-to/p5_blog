@@ -1,4 +1,4 @@
-                <div class="section__content section__content--p30 post" <?= $data['post']['id'] ? 'data-id="' . $data['post']['id'] . '"' : '' ?>>
+                <div class="section__content section__content--p30 post" <?= isset($data['post']['id']) ? 'data-id="' . $data['post']['id'] . '"' : '' ?>>
                     <div class="container-fluid">
                         <div class="card">
                             <form action="/<?= $id == 0 ? 'creer-un-article' : 'editer-un-articler' ?>" method="post" enctype="multipart/form-data" class="form-horizontal ajax-form">
@@ -51,7 +51,7 @@
                                             <label for="introduction" class="form-control-label">Chapô</label>
                                         </div>
                                         <div class="col-12 col-md-9">
-                                            <textarea name="introduction" id="introduction" rows="9" placeholder="Chapô..." class="form-control"><?= $data['post']['introduction'] ?? '' ?></textarea>
+                                            <input type="text" name="introduction" id="introduction" placeholder="Chapô..." class="form-control" <?= $data['post']['introduction'] ? 'value="' . $data['post']['introduction'] . '"' : '' ?>>
                                         </div>
                                     </div>
 

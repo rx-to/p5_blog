@@ -1,5 +1,6 @@
 <?php
 
+require_once 'Util.php';
 require_once 'models/UserManager.php';
 
 class controllerUser extends Controller
@@ -16,11 +17,14 @@ class controllerUser extends Controller
                     $json['alert'] = $this->login($_POST);
                     break;
             }
-            if (isset($json)) echo json_encode($json);
+            if (isset($json)) {
+                echo json_encode($json);
+                die;
+            }
         } elseif ($_SERVER['REQUEST_URI'] == '/deconnexion/') {
             $this->logout();
         } elseif ($_SERVER['REQUEST_URI'] == '/connexion/') {
-            if(isset($_SESSION['user_id'])) 
+            if (isset($_SESSION['user_id']))
                 header('Location: /');
         }
     }

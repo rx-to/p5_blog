@@ -85,22 +85,26 @@ class Util
      */
     public static function generateAlert($errors, $success)
     {
-        $alert = '<div class="alert alert-' . (empty($errors) ? 'success' : 'danger') . '">';
-
-        if (!empty($errors)) {
-            if (count($errors) == 1) {
-                $alert .= "<p>{$errors[0]}</p>";
-            } else {
-                $alert .= '<ul class="mb-0">';
-                foreach ($errors as $error) {
-                    $alert .= "<li>$error</li>";
-                }
-                $alert .= "</ul>";
-            }
+        if (preg_match('/\<script\>/', $success)) {
+            $alert = $success;
         } else {
-            $alert .= "<p>$success</p>";
+            $alert = '<div class="alert alert-' . (empty($errors) ? 'success' : 'danger') . '">';
+
+            if (!empty($errors)) {
+                if (count($errors) == 1) {
+                    $alert .= "<p>{$errors[0]}</p>";
+                } else {
+                    $alert .= '<ul class="mb-0">';
+                    foreach ($errors as $error) {
+                        $alert .= "<li>$error</li>";
+                    }
+                    $alert .= "</ul>";
+                }
+            } else {
+                $alert .= "<p>$success</p>";
+            }
+            $alert .= '</div>';
         }
-        $alert .= '</div>';
 
         return $alert;
     }
@@ -131,7 +135,7 @@ class Util
 
         if ($image['size'] > 5242880)                                              $errors[] = "L'image doit être inférieure à 5 Mo.";
         if ($image['error'] > 0 || !move_uploaded_file($image['tmp_name'], $path)) $errors[] = 'Une erreur inattendue est survenue.';
-    
+
         return count($errors) == 0 ? "$name.$extension" : $errors;
     }
 
@@ -152,5 +156,26 @@ class Util
         }
 
         return count($errors) == 0 ? true : $errors;
+    }
+
+    /**
+     * Generates image input.
+     * @param string $name
+     * @return string
+     */
+    public static function generateInputFile($name)
+    {
+        return '<input type="file" id="' . $name . '" name="' . $name . '">' . "\n";
+    }
+
+    /**
+     * Shortens a given string.
+     * @param string $string
+     * @param int    $max
+     * @return string
+     */
+    public static function shortenString($string, $max = 100)
+    {
+        return substr($string, 0, $max) . (strlen($string) > $max ? '...' : '');
     }
 }

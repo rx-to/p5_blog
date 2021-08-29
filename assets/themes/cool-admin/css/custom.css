@@ -28,6 +28,19 @@
 	visibility: visible;
 }
 
+.logo-efblog {
+    mix-blend-mode: multiply;
+    max-height: 50px;
+}
+
+.au-btn--red {
+    background: #fa4251;
+}
+
+.au-btn--red:hover {
+    background: #e63a48;
+}
+
 @media (max-width: 991px) {
 	.header-desktop {
 		height: 70px;

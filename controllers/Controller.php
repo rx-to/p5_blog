@@ -5,10 +5,53 @@ require_once 'controllers/ControllerUser.php';
 
 class Controller
 {
+    private $_visibility;
+    private $_slug;
+
+    function __construct($visibility, $slug)
+    {
+        $this->setSlug($slug);
+        $this->setVisibility($visibility);
+    }
+
+    /**
+     * Sets value of `$_visibility`.
+     * @param string $visibility
+     */
+    private function setVisibility($visibility)
+    {
+        $this->_visibility = $visibility;
+    }
+
+    /**
+     * Gets value of `$_visibility`.
+     * @return string
+     */
+    protected function getVisibility()
+    {
+        return $this->_visibility;
+    }
+
+    /**
+     * Sets value of `$_slug`.
+     * @param string $slug
+     */
+    private function setSlug($slug)
+    {
+        $this->_slug = $slug;
+    }
+
+    /**
+     * Gets value of `$_slug`.
+     * @return string
+     */
+    protected function getSlug()
+    {
+        return $this->_slug;
+    }
+
     /**
      * Returns view file from slug.
-     * @param  string $visibility
-     * @param  string $slug
      * @return string
      */
     protected function getView($visibility, $slug)
@@ -42,10 +85,12 @@ class Controller
 
     /**
      * Returns current page data.
-     * @param  string $slug
+     * @param string $visibility
+     * @param string $slug
+     * @param int    $id
      * @return array
      */
-    protected function getPageData($visibility, $slug)
+    protected function getPageData($visibility, $slug, $id = null)
     {
         $model = new Model();
 
@@ -69,15 +114,17 @@ class Controller
      * @param string $slug
      * @return mixed
      */
-    public function requireController($visibility, $slug)
+    public function requireController()
     {
-        $model = new Model();
-        $data = $model->selectPage($visibility, $slug);
-        $controller = null;
+        $model          = new Model();
+        $visibility     = $this->getVisibility();
+        $slug           = $this->getSlug();
+        $data           = $model->selectPage($visibility, $slug);
+        $controller     = null;
         $controllerName = $data[0]['controller'] ? $data[0]['controller'] : null;
         if ($controllerName) {
             require_once("controllers/$controllerName.php");
-            $controller = new $controllerName();
+            $controller = new $controllerName($visibility, $slug);
         }
         return $controller;
     }
@@ -94,9 +141,9 @@ class Controller
             $controllerUser = new ControllerUser();
             $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         }
-        
-        $file           = $this->getView($visibility, $slug, $id);
-        $data           = $this->getPageData($visibility, $slug, $id);
+
+        $file = $this->getView($visibility, $slug);
+        $data = $this->getPageData($visibility, $slug, $id);
         if (!$data) throw new Exception('Pas de données pour cette URL', 404);
 
         ob_start();

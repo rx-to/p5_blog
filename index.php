@@ -6,17 +6,17 @@ require_once 'Util.php';
 require_once 'controllers/Controller.php';
 require_once 'controllers/ControllerUser.php';
 
-// Controllers.
-$mainController = new Controller();
-$controllerUser = new ControllerUser();
-
-// User data.
-$curUser = $controllerUser->getUser('id', $_SESSION['user_id'] ?? null);
-
 // Query strings
 $id         = $_GET['id']         ?? null;
 $visibility = $_GET['visibility'] ?? 'public';
 $slug       = $_GET['slug']       ?? 'accueil';
+
+// Controllers.
+$mainController = new Controller($visibility, $slug);
+$controllerUser = new ControllerUser();
+
+// User data.
+$curUser = $controllerUser->getUser('id', $_SESSION['user_id'] ?? null);
 
 if ($visibility == 'public' && $slug == 'admin') {
     if ($controllerUser->isAdmin($curUser['id'])) {
@@ -25,7 +25,7 @@ if ($visibility == 'public' && $slug == 'admin') {
     }
 }
 
-if ($pageController = $mainController->requireController($visibility, $slug))
+if ($pageController = $mainController->requireController())
     $mainController = $pageController;
 
 try {

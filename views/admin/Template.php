@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <?php
-    echo $data['page']['meta_description'] ? '<meta name="description" content="' . $data['page']['meta_description'] . '">' : '';
-    echo $data['page']['meta_keywords']    ? '<meta name="keywords" content="' . $data['page']['meta_keywords'] . '">'       : '';
+    echo isset($data['page']['meta_description']) ? '<meta name="description" content="' . $data['page']['meta_description'] . '">' : '';
+    echo isset($data['page']['meta_keywords'])    ? '<meta name="keywords" content="' . $data['page']['meta_keywords'] . '">'       : '';
     echo '<title>' . $data['page']['meta_title'] . '</title>';
     ?>
     <!-- Fontfaces CSS-->
@@ -40,8 +40,8 @@
             <div class="header-mobile__bar">
                 <div class="container-fluid">
                     <div class="header-mobile-inner">
-                        <a class="logo" href="index.html">
-                            <img src="/assets/themes/cool-admin/images/icon/logo.png" alt="CoolAdmin" />
+                        <a class="logo" href="/">
+                            <img src="/assets/themes/cool-admin/img/logo.jpg" class="logo-efblog" alt="CoolAdmin" />
                         </a>
                         <button class="hamburger hamburger--slider" type="button">
                             <span class="hamburger-box">
@@ -54,19 +54,19 @@
             <nav class="navbar-mobile">
                 <div class="container-fluid">
                     <ul class="navbar-mobile__list list-unstyled">
-                        <li class="has-sub<?= in_array($slug, ['liste-des-articles', 'creer-un-article', 'editer-un-article']) ? ' active' : '' ?>">
+                        <li class="has-sub<?= in_array($slug, ['liste-des-articles', 'detail-article', 'editer-un-article']) ? ' active' : '' ?>">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-file"></i>Articles</a>
                             <ul class="list-unstyled navbar__sub-list js-sub-list">
                                 <li>
-                                    <a href="/admin/liste-des-articles/">Tous les articles</a>
+                                    <a href="/admin/liste-des-articles/" <?= $slug == 'liste-des-articles' ? 'class="font-weight-bold"' : '' ?>>Tous les articles</a>
                                 </li>
                                 <li>
-                                    <a href="/admin/creer-un-article/">Créer un article</a>
+                                    <a href="/admin/creer-un-article/" <?= $slug == 'detail-article' ? 'class="font-weight-bold"' : '' ?>>Créer un article</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="has-sub<?= in_array($slug, ['liste-des-commentaires', 'commentaires-signales']) ? ' active' : '' ?>">
+                        <li class="has-sub<?= in_array($slug, ['liste-des-commentaires', 'commentaires-en-attente, detail-commentaire']) ? ' active' : '' ?>">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-comment"></i>Commentaires</a>
                             <ul class="list-unstyled navbar__sub-list js-sub-list">
@@ -74,7 +74,7 @@
                                     <a href="/admin/liste-des-commentaires/">Tous les commentaires</a>
                                 </li>
                                 <li>
-                                    <a href="/admin/commentaires-signales/">Commentaires signalés</a>
+                                    <a href="/admin/commentaires-en-attente/">Commentaires en attente</a>
                                 </li>
                             </ul>
                         </li>
@@ -92,8 +92,8 @@
         <!-- MENU SIDEBAR-->
         <aside class="menu-sidebar d-none d-lg-block">
             <div class="logo">
-                <a href="#">
-                    <img src="/assets/themes/cool-admin/images/icon/logo.png" alt="Cool Admin" />
+                <a href="/">
+                    <img src="/assets/themes/cool-admin/img/logo.jpg" class="logo-efblog" alt="Cool Admin" />
                 </a>
             </div>
             <div class="menu-sidebar__content js-scrollbar1">
@@ -104,7 +104,7 @@
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
                             <ul class="list-unstyled navbar__sub-list js-sub-list">
                                 <li>
-                                    <a href="index.html">Dashboard 1</a>
+                                    <a href="/">Dashboard 1</a>
                                 </li>
                                 <li>
                                     <a href="index2.html">Dashboard 2</a>
@@ -117,19 +117,19 @@
                                 </li>
                             </ul>
                         </li> -->
-                        <li class="has-sub<?= in_array($slug, ['liste-des-articles', 'creer-un-article', 'editer-un-article']) ? ' active' : '' ?>">
+                        <li class="has-sub<?= in_array($slug, ['liste-des-articles', 'detail-article', 'editer-un-article']) ? ' active' : '' ?>">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-file"></i>Articles</a>
                             <ul class="list-unstyled navbar__sub-list js-sub-list">
                                 <li>
-                                    <a href="/admin/liste-des-articles/">Tous les articles</a>
+                                    <a href="/admin/liste-des-articles/" <?= $slug == 'liste-des-articles' ? 'class="font-weight-bold"' : '' ?>>Tous les articles</a>
                                 </li>
                                 <li>
-                                    <a href="/admin/creer-un-article/">Créer un article</a>
+                                    <a href="/admin/creer-un-article/" <?= $slug == 'detail-article' ? 'class="font-weight-bold"' : '' ?>>Créer un article</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="has-sub<?= in_array($slug, ['liste-des-commentaires', 'commentaires-signales']) ? ' active' : '' ?>">
+                        <li class="has-sub<?= in_array($slug, ['liste-des-commentaires', 'commentaires-en-attente', 'detail-commentaire']) ? ' active' : '' ?>">
                             <a class="js-arrow" href="#">
                                 <i class="fas fa-comment"></i>Commentaires</a>
                             <ul class="list-unstyled navbar__sub-list js-sub-list">
@@ -137,7 +137,7 @@
                                     <a href="/admin/liste-des-commentaires/">Tous les commentaires</a>
                                 </li>
                                 <li>
-                                    <a href="/admin/commentaires-signales/">Commentaires signalés</a>
+                                    <a href="/admin/commentaires-en-attente/">Commentaires en attente</a>
                                 </li>
                             </ul>
                         </li>

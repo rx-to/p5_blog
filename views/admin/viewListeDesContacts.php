@@ -35,6 +35,7 @@
                             echo        '</div>';
                             echo    '</td>';
                             echo '</tr>';
+                            echo '<tr class="spacer"><td class="d-none" colspan="6"></td></tr>';
                         }
                     } ?>
                 </tbody>

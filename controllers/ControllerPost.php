@@ -14,13 +14,18 @@ class ControllerPost extends Controller
                     break;
 
                 case 'deleteComment':
+                    $visibility = $this->getVisibility();
+                    $status     = $visibility == 'public' ? 1 : null;
                     $json['alert']    = $this->deleteComment($_POST['comment_id']);
-                    $json['comments'] = $this->generateCommentList($_POST['post_id']);
+                    if ($this->getVisibility() == 'public')
+                        $json['comments'] = $this->generateCommentList($_POST['post_id'], 'public', 1);
+                    else
+                        $json['comments'] = $this->generateCommentList(null, 'admin');
                     break;
 
-                case 'reportComment';
-                    $json['alert'] = $this->reportComment($_POST['comment_id'], $_POST['report']);
-                    break;
+                    // case 'reportComment';
+                    //     $json['alert'] = $this->reportComment($_POST['comment_id'], $_POST['report']);
+                    //     break;
 
                     // Admin
                 case 'createPost':
@@ -37,8 +42,23 @@ class ControllerPost extends Controller
                     break;
 
                 case 'deleteImage':
-                    $json['alert'] = $this->deleteImage($_POST['post_id']);
-                    $json['inputFile']  = $this->generateInputFile('uploadImage');
+                    $json['alert']     = $this->deleteImage($_POST['post_id']);
+                    $json['inputFile'] = Util::generateInputFile('uploadImage');
+                    break;
+
+                case 'deleteComment':
+                    $json['alert']    = $this->deleteComment($_POST['comment_id']);
+                    $json['comments'] = $this->generateCommentList($_POST['post_id'], 'admin');
+                    break;
+
+                case 'validateComment?getAllComments()':
+                    $json['alert']    = $this->validateComment($_POST['comment_id']);
+                    $json['comments'] = $this->generateCommentList(null, 'admin');
+                    break;
+
+                case 'validateComment?getPendingComments()':
+                    $json['alert']    = $this->validateComment($_POST['comment_id']);
+                    $json['comments'] = $this->generateCommentList(null, 'admin', 0);
                     break;
             }
             echo json_encode($json);
@@ -50,11 +70,11 @@ class ControllerPost extends Controller
      * @param  int   $limit
      * @return array
      */
-    protected function getPostList($limit = null)
+    protected function getPostList($limit = null, $visibility = 'public')
     {
         $postManager = new PostManager();
-        $page        = $postManager->selectPage('public', 'articles');
-        $postlist    = $postManager->getAll($limit);
+        $page        = $postManager->selectPage($visibility, 'articles');
+        $postlist    = $postManager->getAll($limit, $visibility);
         $pageNo      = $_GET['page_no'] ?? 1;
 
         if ($postlist && $pageNo > 0 && $pageNo <= $postlist['number_of_pages']) {
@@ -83,8 +103,8 @@ class ControllerPost extends Controller
 
     /**
      * Returns current page data.
-     * @param  string $visibility
-     * @param  string $slug
+     * @param string $visibility
+     * @param string $slug
      * @param  int    $id
      * @return array
      */
@@ -95,78 +115,58 @@ class ControllerPost extends Controller
         $pageNo      = $_GET['page_no'] ?? 1;
         $limit       = $visibility == 'public' ? 5 : 20;
 
-        if ($id) {
-            $data['post'] = $this->getPost($id);
+        if ($slug == 'detail-commentaire') {
+            $data['comment'] = $this->getComment($id);
+
             $data['page'] = [
-                'meta_title'       => str_replace('{% title %}', $data['post']['title'], $page[0]['meta_title']),
+                'meta_title'       => str_replace('{% id %}', $id, $page[0]['meta_title']),
                 'meta_description' => $page[0]['meta_description'],
                 'meta_keywords'    => $page[0]['meta_keywords'],
-                'title'            => $data['post']['title'],
-                'subtitle'         => $data['post']['introduction'],
-                'header'           => $page[0]['header']
+            ];
+        } elseif (in_array($slug, ['liste-des-commentaires', 'commentaires-en-attente'])) {
+            $status = $slug == 'commentaires-en-attente' ? 0 : null;
+            $data['commentlist'] = $this->getComments(null, $status);
+
+            $data['page'] = [
+                'meta_title'       => $page[0]['meta_title'],
+                'meta_description' => $page[0]['meta_description']
             ];
         } else {
-            $data['postlist'] = $this->getPostList($limit);
-            $data['page'] = [
-                'meta_title'       => str_replace('{% page_no %}', $pageNo, $page[0]['meta_title']),
-                'meta_description' => str_replace('{% page_no %}', $pageNo, $page[0]['meta_description']),
-                'meta_keywords'    => $page[0]['meta_keywords'],
-                'title'            => $page[0]['title'],
-                'subtitle'         => $page[0]['subtitle'],
-                'header'           => $page[0]['header'],
-                'page_no'          => $pageNo
-            ];
+            if ($id !== null) {
+                $data['post'] = $this->getPost($id);
+
+                if ($id == 0) {
+                    // Post creation form.
+                    $data['page'] = [
+                        'meta_title'       => str_replace('{% title %}', "Créer un article", $page[0]['meta_title']),
+                        'meta_description' => $page[0]['meta_description']
+                    ];
+                } else {
+                    // Post edition form.
+                    $data['page'] = [
+                        'meta_title'       => str_replace('{% title %}', ($visibility == "admin" ? "Éditer un article : " : "") . $data['post']['title'], $page[0]['meta_title']),
+                        'meta_description' => $page[0]['meta_description'],
+                        'meta_keywords'    => $page[0]['meta_keywords'],
+                        'title'            => $data['post']['title'],
+                        'subtitle'         => $data['post']['introduction'],
+                        'header'           => $page[0]['header']
+                    ];
+                }
+            } else {
+                $data['postlist'] = $this->getPostList($limit, $visibility);
+
+                $data['page']     = [
+                    'meta_title'       => str_replace('{% page_no %}', $pageNo, $page[0]['meta_title']),
+                    'meta_description' => str_replace('{% page_no %}', $pageNo, $page[0]['meta_description']),
+                    'meta_keywords'    => $page[0]['meta_keywords'],
+                    'title'            => $page[0]['title'],
+                    'subtitle'         => $page[0]['subtitle'],
+                    'header'           => $page[0]['header'],
+                    'page_no'          => $pageNo
+                ];
+            }
         }
         return $data;
-    }
-
-    /**
-     * Posts comment.
-     * @param  array $data
-     * @return string
-     */
-    private function postComment($data)
-    {
-        $controllerUser = new ControllerUser();
-        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
-        $errors         = [];
-        if (strlen(strip_tags($data['comment'])) <= 3000) {
-            $postManager = new PostManager();
-            if (!$postManager->insertComment($data, $curUser['id'])) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-            return Util::generateAlert($errors, "Votre commentaire a été envoyé. Il s'affichera après avoir été approuvé par un administrateur.");
-        }
-    }
-
-    /**
-     * Edits comment.
-     * @param  array $data
-     * @return string
-     */
-    private function editComment($data)
-    {
-        //TODO: Sécuriser édition commentaires
-        $errors = [];
-        if (strlen(strip_tags($data['comment'])) <= 3000) {
-            $postManager = new PostManager();
-            if (!$postManager->updateComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-            return Util::generateAlert($errors, "Votre commentaire a bien été mis à jour. Vos modifications s'afficheront après avoir été approuvées par un administrateur.");
-        }
-    }
-
-    /**
-     * Deletes comment.
-     * @param  int    $id
-     * @return string
-     */
-    private function deleteComment($id)
-    {
-        $errors         = [];
-        $controllerUser = new ControllerUser();
-        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
-        $postManager    = new PostManager();
-        $comment        = $this->getComment($id);
-        if (!$postManager->deleteComment($id) || !$controllerUser->isAdmin($curUser['id']) && $curUser['id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-        return Util::generateAlert($errors, "Le commentaire a bien été supprimé.");
     }
 
     /**
@@ -202,30 +202,30 @@ class ControllerPost extends Controller
         return Util::generateAlert($errors, "L'image a bien été supprimée.");
     }
 
-    /**
-     * Reports comment.
-     * @param  int    $id
-     * @return string
-     */
-    private function reportComment($id, $report)
-    {
-        $errors = [];
-        $postManager = new PostManager();
-        if (strlen($report) < 5) $report = 1;
-        if (!$postManager->reportComment($id, $report))
-            $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-        return Util::generateAlert($errors, "Votre signalement a bien été pris en compte. Nous l'étudierons dans les plus brefs délais afin de déterminer s'il enfreint nos conditions générales d'utilisation.");
-    }
+    // /**
+    //  * Reports comment.
+    //  * @param  int    $id
+    //  * @return string
+    //  */
+    // private function reportComment($id, $report)
+    // {
+    //     $errors = [];
+    //     $postManager = new PostManager();
+    //     if (strlen($report) < 5) $report = 1;
+    //     if (!$postManager->reportComment($id, $report))
+    //         $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+    //     return Util::generateAlert($errors, "Votre signalement a bien été pris en compte. Nous l'étudierons dans les plus brefs délais afin de déterminer s'il enfreint nos conditions générales d'utilisation.");
+    // }
 
     /**
      * Returns post comments.
      * @param  int   $id Post ID.
      * @return array 
      */
-    private function getComments($id)
+    private function getComments($id = null, $status = null)
     {
         $postManager = new PostManager();
-        return $postManager->selectComments($id);
+        return $postManager->selectComments($id, $status);
     }
 
     /**
@@ -241,61 +241,102 @@ class ControllerPost extends Controller
 
     /**
      * Generates comment list.
-     * @param  int   $id Post ID.
+     * @param  int    $id Post ID.
+     * @param  int    $status Comments status.
      * @return string      
      */
-    public function generateCommentList($id)
+    public function generateCommentList($id = null, $visibility = 'public', $status = null)
     {
         $controllerUser = new ControllerUser();
-        if (isset($_SESSION['user_id'])) {
-            $curUser = $controllerUser->getUser('id', $_SESSION['user_id']);
-        }
-        $comments = $this->getComments($id);
-        $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
 
-        if (!isset($curUser['id'])) {
-            $html .= '<div class="alert alert-warning">';
-            $html .= '<p class="mb-0">Vous devez être connecté(e) afin de commenter cet article.</p>';
-            $html .= '</div>';
-        }
+        if ($visibility == 'public') {
+            $comments = $this->getComments($id, $status);
 
-        if (count($comments) > 0) {
-            foreach ($comments as $comment) {
-                $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
-                $html .=     '<div class="actions">';
-                $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
-                $html .=         '<div class="actions__wrapper">';
-                $html .=             '<nav class="actions__list">';
-                $html .=                 '<ul>';
-                if (isset($curUser['id']) && ($controllerUser->isAdmin($curUser['id']) || $curUser['id'] == $comment['author_id'])) {
-                    if ($curUser['id'] == $comment['author_id']) {
-                        $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
-                    }
-                    $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
-                } else {
-                    $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
-                }
-                $html .=                 '</ul>';
-                $html .=             '</nav>';
-                $html .=         '</div>';
-                $html .=     '</div>';
-                $html .=     '<a href="/utilisateur/' . $comment['user_slug'] . '/">';
-                $html .=         '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
-                $html .=     '</a>';
-                $html .=     '<header>';
-                $html .=         '<h3 class="comment__author-name"><a href="/utilisateur/' . $comment['user_slug'] . '/">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</a></h3>';
-                $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
-                $html .=     '</header>';
-                $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
-                $html .=     $comment['update_date_fr'] ? '<div class="comment__date mt-3 text-right"><em>(Modifié le ' . $comment['update_date_fr'] . ')</em></div>' : '';
+            if (isset($_SESSION['user_id'])) {
+                $curUser = $controllerUser->getUser('id', $_SESSION['user_id']);
+            }
+            $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
+
+            if (!isset($curUser['id'])) {
+                $html .= '<div class="alert alert-warning">';
+                $html .= '<p class="mb-0">Vous devez être connecté(e) afin de commenter cet article.</p>';
                 $html .= '</div>';
             }
+
+            if (count($comments) > 0) {
+                foreach ($comments as $comment) {
+                    $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
+                    $html .=     '<div class="actions">';
+                    $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
+                    $html .=         '<div class="actions__wrapper">';
+                    $html .=             '<nav class="actions__list">';
+                    $html .=                 '<ul>';
+                    if (isset($curUser['id']) && ($controllerUser->isAdmin($curUser['id']) || $curUser['id'] == $comment['author_id'])) {
+                        if ($curUser['id'] == $comment['author_id']) {
+                            $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
+                        }
+                        $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
+                    } else {
+                        $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                    }
+                    $html .=                 '</ul>';
+                    $html .=             '</nav>';
+                    $html .=         '</div>';
+                    $html .=     '</div>';
+                    $html .=     '<a href="/utilisateur/' . $comment['user_slug'] . '/">';
+                    $html .=         '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
+                    $html .=     '</a>';
+                    $html .=     '<header>';
+                    $html .=         '<h3 class="comment__author-name"><a href="/utilisateur/' . $comment['user_slug'] . '/">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</a></h3>';
+                    $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
+                    $html .=     '</header>';
+                    $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
+                    $html .=     $comment['update_date_fr'] ? '<div class="comment__date mt-3 text-right"><em>(Modifié le ' . $comment['update_date_fr'] . ')</em></div>' : '';
+                    $html .= '</div>';
+                }
+            } else {
+                if (isset($curUser['id'])) {
+                    $html .= '<p>Soyez la première personne à commenter cet article ! 😜</p>';
+                }
+            }
         } else {
-            if (isset($curUser['id'])) {
-                $html .= '<p>Soyez la première personne à commenter cet article ! 😜</p>';
+            $comments = $this->getComments(null, $status);
+
+            $html  = '';
+            foreach ($comments as $key => $comment) {
+                if (is_int($key)) {
+                    $html .= '<tr class="tr-shadow comment" data-id="' . $comment['id'] . '">';
+                    $html .=    '<td>' . "{$comment['author_first_name']} {$comment['author_last_name']}" . '</td>';
+                    $html .=    '<td><span class="block-email">' . $comment['creation_date_fr'] . '</span></td>';
+                    $html .=    '<td><span class="block-email">' . $comment['update_date_fr'] . '</span></td>';
+                    $html .=    '<td>' . Util::shortenString($comment['content']) . '</td>';
+                    $html .=    '<td>';
+                    $html .=        '<div class="table-data-feature">';
+                    $html .=            '<a href="/admin/detail-commentaire/' . $comment['id'] . '/" class="item" title="Voir le commentaire"><i class="fas fa-eye"></i></a>';
+                    if ($comment['status'] == 0)
+                        $html .=        '<a href="#validate-comment?get' . ($status == 0 ? 'Pending' : 'All') . 'Comments()" class="item" title="Valider"><i class="zmdi zmdi-check"></i></a>';
+                    $html .=            '<a href="#delete-comment" class="item" data-toggle="modal" data-target="#staticBackdrop" title="Supprimer"><i class="zmdi zmdi-delete"></i></a>';
+                    $html .=        '</div>';
+                    $html .=    '</td>';
+                    $html .= '</tr>';
+                    $html .= '<tr class="spacer"></tr>';
+                }
             }
         }
+
         return $html;
+    }
+
+    /**
+     * Validates comment.
+     * @param int $id
+     */
+    private function validateComment($id)
+    {
+        $errors         = [];
+        $postManager = new PostManager();
+        if (!$postManager->validateComment($id)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        return Util::generateAlert($errors, "Commentaire validé.");
     }
 
     /**
@@ -305,7 +346,7 @@ class ControllerPost extends Controller
      */
     public function generatePostList($limit = null)
     {
-        $postlist = $this->getPostList($limit);
+        $postlist = $this->getPostList($limit, 'admin');
         $html     = '';
         foreach ($postlist as $key => $post) {
             if (is_numeric($key)) {
@@ -358,15 +399,14 @@ class ControllerPost extends Controller
         if (!Util::checkStrLen($data['title'], 3, 1000))  $errors[] = 'Veuillez saisir un titre entre 3 et 1 000 caractères.';
         if (!Util::checkStrLen($data['title'], 3, 20000)) $errors[] = 'Veuillez saisir un contenu entre 3 et 20 000 caractères.';
 
-        if (count($errors) == 0) {
+        if ($action == 'create') {
             $alert = Util::generateAlert($errors, "L'article a bien été créé.");
-            if ($action == 'create') {
-                if (!$postManager->insertPost($data, $curUser['id'])) $errors[] = $defaultError;
-            } else {
-                $alert = Util::generateAlert($errors, "Les modifications ont bien été prises en compte.");
-                if (!$postManager->updatePost($data, $curUser['id'])) $errors[] = $defaultError;
-            }
+            if (!$postManager->insertPost($data, $curUser['id'])) $errors[] = $defaultError;
+        } else {
+            $alert = Util::generateAlert($errors, "Les modifications ont bien été prises en compte.");
+            if (!$postManager->updatePost($data, $curUser['id'])) $errors[] = $defaultError;
         }
+
 
         return $alert . Util::redirect('/admin/liste-des-articles/', 3000);
     }
@@ -392,12 +432,51 @@ class ControllerPost extends Controller
     }
 
     /**
-     * Generates image input.
-     * @param string $name
+     * Posts comment.
+     * @param  array $data
      * @return string
      */
-    private function generateInputFile($name)
+    private function postComment($data)
     {
-        return '<input type="file" id="' . $name . '" name="' . $name . '">' . "\n";
+        $controllerUser = new ControllerUser();
+        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+        $errors         = [];
+        if (strlen(strip_tags($data['comment'])) <= 3000) {
+            $postManager = new PostManager();
+            if (!$postManager->insertComment($data, $curUser['id'])) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+            return Util::generateAlert($errors, "Votre commentaire a été envoyé. Il s'affichera après avoir été approuvé par un administrateur.");
+        }
+    }
+
+    /**
+     * Edits comment.
+     * @param  array $data
+     * @return string
+     */
+    private function editComment($data)
+    {
+        //TODO: Sécuriser édition commentaires
+        $errors = [];
+        if (strlen(strip_tags($data['comment'])) <= 3000) {
+            $postManager = new PostManager();
+            if (!$postManager->updateComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+            return Util::generateAlert($errors, "Votre commentaire a bien été mis à jour. Vos modifications s'afficheront après avoir été approuvées par un administrateur.");
+        }
+    }
+
+    /**
+     * Deletes comment.
+     * @param  int    $id
+     * @return string
+     */
+    private function deleteComment($id)
+    {
+        $errors         = [];
+        $controllerUser = new ControllerUser();
+        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+        $postManager    = new PostManager();
+        $comment        = $this->getComment($id);
+        if (!$postManager->deleteComment($id) || !$controllerUser->isAdmin($curUser['id']) && $curUser['id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+        return Util::generateAlert($errors, "Le commentaire a bien été supprimé.");
     }
 }

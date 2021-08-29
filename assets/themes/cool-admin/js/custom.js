@@ -14,6 +14,11 @@ function ajax(data, url = "") {
 				case "deletePost":
 					$(".post-list").html(json.postlist);
 					break;
+				case "deleteComment":
+				case "validateComment?getPendingComments()":
+				case "validateComment?getAllComments()":
+					$(".comment-list").html(json.comments);
+					break;
 				case "deleteImage":
 					$(".uploadImage-container").html(json.inputFile);
 					break;
@@ -63,6 +68,22 @@ $("a[data-toggle=modal]").on("click", function (e) {
 			modal = true;
 			break;
 
+		case "#validate-comment?getAllComments()":
+			title = "Valider le commentaire";
+			content = "<p>Souhaitez-vous valider ce commentaire ?</p>";
+			dataAction = "validate-comment?getAllComments()";
+			dataAttr = { "comment-id": commentID };
+			modal = true;
+			break;
+
+		case "#validate-comment?getPendingComments()":
+			title = "Valider le commentaire";
+			content = "<p>Souhaitez-vous valider ce commentaire ?</p>";
+			dataAction = "validate-comment?getPendingComments()";
+			dataAttr = { "comment-id": commentID };
+			modal = true;
+			break;
+
 		case "#delete-post":
 			title = "Supprimer un article";
 			content = "<p>Êtes-vous sûr(e) de vouloir supprimer cet article ?</p>";
@@ -78,27 +99,6 @@ $("a[data-toggle=modal]").on("click", function (e) {
 			dataAttr = { "post-id": postID };
 			modal = true;
 			break;
-
-		// case "#report-comment":
-		// 	title = "Signaler un commentaire";
-		// 	content = "<p>Pour quelle(s) raison(s) souhaitez-vous signaler ce commentaire ?</p>";
-		// 	content += '<div class="form-group floating-label-form-group controls">';
-		// 	content += "<label>Raison du signalement</label>";
-		// 	content += '<textarea class="form-control" id="report" name="report" rows="2" placeholder="La raison de votre signalement..."></textarea>';
-		// 	content += "</div>";
-		// 	dataAction = "report-comment";
-		// 	dataAttr = { "comment-id": commentID };
-		// 	modal = true;
-		// 	break;
-
-		// case "#edit-comment":
-		// 	let comment = $("#comment__content-" + commentID)
-		// 		.html()
-		// 		.replace(/<br>/, "");
-		// 	$("input[name=comment_id]").val(commentID);
-		// 	$("#comment").html(comment);
-		// 	$("html, body").animate({ scrollTop: $("#comment").offset().top - 67 }, 200);
-		// 	break;
 	}
 
 	// If action requires modal.
@@ -122,7 +122,14 @@ $(document).on("click", ".modal .btn-yes", function () {
 		case "delete-comment":
 			data.append("action", "deleteComment");
 			data.append("comment_id", commentID);
-			// data.append("post_id", postID);
+			break;
+		case "validate-comment?getPendingComments()":
+			data.append("action", "validateComment?getPendingComments()");
+			data.append("comment_id", commentID);
+			break;
+		case "validate-comment?getAllComments()":
+			data.append("action", "validateComment?getAllComments()");
+			data.append("comment_id", commentID);
 			break;
 		case "delete-post":
 			data.append("action", "deletePost");

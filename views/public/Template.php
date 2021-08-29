@@ -12,7 +12,6 @@
     ?>
     <link href="/assets/themes/clean-blog/favicon.ico" rel="icon" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    </link>
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
     <link href="/assets/themes/clean-blog/css/style.css" rel="stylesheet">

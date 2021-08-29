@@ -7,18 +7,30 @@ class PostManager extends Model
      * @param  int  $id Post ID.
      * @return bool
      */
-    public function selectComments($id)
+    public function selectComments($id = null, $status = null)
     {
         $db    = $this->getDB();
 
+        $params = [];
+
         $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                    FROM     `post_comment` pc 
-                   JOIN     `user`         u      ON pc.`author_id` = u.`id`
-                   WHERE    `post_id`              = :post_id
-                   AND      `status`               = 1
-                   ORDER BY `creation_date` DESC";
+                   JOIN     `user`         u      ON pc.`author_id` = u.`id`";
+
+        if ($id) {
+            $query .= " WHERE `post_id` = :post_id";
+            $params[':post_id'] = $id;
+        }
+
+        if ($status !== null) {
+            $query .= (!strpos($query, "WHERE") ? " WHERE" : " AND") . " pc.`status` = :status";
+            $params[':status'] = $status;
+        }
+
+        $query .= " ORDER BY `creation_date` DESC";
         $stmt  = $db->prepare($query);
-        $stmt->execute([':post_id' => $id]);
+
+        $stmt->execute($params);
         $comments = [];
         while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $comment['user_slug'] = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
@@ -40,8 +52,7 @@ class PostManager extends Model
         $query = "SELECT pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                   FROM   `post_comment` pc 
                   JOIN   `user`         u  ON pc.`author_id` = u.`id`
-                  WHERE  pc.`id`               = :id
-                  AND    `status`           = 1";
+                  WHERE  pc.`id`            = :id";
         $stmt  = $db->prepare($query);
         $stmt->execute([':id' => $id]);
 
@@ -53,14 +64,14 @@ class PostManager extends Model
      * @param int $limit
      * @return array
      */
-    public function getAll($limit = 5)
+    public function getAll($limit = 5, $visibility = 'public')
     {
         $db     = $this->getDB();
 
         $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
-                   LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id`
+                   LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id` " . ($visibility == 'public' ? 'WHERE p.`status` = 1' : '') . "
                    GROUP BY  p.`id`
                    ORDER BY  p.`creation_date` DESC
                    LIMIT     :limit" . (!$limit ? ", 5" : '');
@@ -109,17 +120,17 @@ class PostManager extends Model
             $post['slug'] = Util::slugify($post['title'] . '-' . $post['id']);
 
             // Comments
-            $post['comments'] = $this->selectComments($id);
+            $post['comments'] = $this->selectComments($id, 1);
 
             // Previous article slug
-            $query = "SELECT `id`, `title` FROM `post` WHERE `id` < :id ORDER BY `creation_date` DESC LIMIT 1";
+            $query = "SELECT `id`, `title` FROM `post` WHERE `id` < :id AND `status` = 1 ORDER BY `creation_date` DESC LIMIT 1";
             $stmt  = $db->prepare($query);
             $stmt->execute([':id' => $id]);
             if ($previous = $stmt->fetch(PDO::FETCH_ASSOC))
                 $post['previous'] = Util::slugify("{$previous['title']}-{$previous['id']}");
 
             // Next article slug
-            $query = "SELECT `id`, `title` FROM `post` WHERE `id` > :id ORDER BY `creation_date` ASC LIMIT 1";
+            $query = "SELECT `id`, `title` FROM `post` WHERE `id` > :id AND `status` = 1 ORDER BY `creation_date` ASC LIMIT 1";
             $stmt  = $db->prepare($query);
             $stmt->execute([':id' => $id]);
             if ($next = $stmt->fetch(PDO::FETCH_ASSOC))
@@ -257,6 +268,17 @@ class PostManager extends Model
     }
 
     /**
+     * Validates comment.
+     * @param int $id
+     */
+    public function validateComment($id)
+    {
+        $db     = $this->getDB();
+        $stmt   = $db->prepare("UPDATE `post_comment` SET `status` = 1 WHERE `id` = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    /**
      * Updates post.
      * @param string $data
      * @return bool
@@ -290,5 +312,33 @@ class PostManager extends Model
         $db    = $this->getDB();
         $stmt  = $db->query("SELECT MAX(`id`) FROM `post`");
         return $stmt->fetch(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Returns comment list.
+     * @return array
+     */
+    public function getCommentList($status = null)
+    {
+        $db     = $this->getDB();
+        $params = [];
+        $query  = "SELECT * 
+                   FROM `post_comment` pc 
+                   JOIN `user`         u  ON pc.`author_id` = u.`id`";
+
+        if ($status) {
+            $query .= " WHERE `status` = :status";
+            $params = [':status' => $status];
+        }
+
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
+
+        $commentlist = [];
+        while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $commentlist[] = $comment;
+        }
+
+        return $commentlist;
     }
 }

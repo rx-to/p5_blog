@@ -6,6 +6,7 @@
                 <img src="/assets/themes/clean-blog/img/developpeur.jpg" alt="Développeur web" class="img-fluid">
                 <br><br>
                 <p>Passionné d'informatique et particulièrement de développement web, je prends plaisir à vous partager mes connaissances et à parler d'actualité informatique !</p>
+                <p><a href="#"><i class=""></i></a></p>
             </section>
 
             <section>
