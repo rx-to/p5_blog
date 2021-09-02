@@ -6,7 +6,7 @@
                 <img src="/assets/themes/clean-blog/img/developpeur.jpg" alt="Développeur web" class="img-fluid">
                 <br><br>
                 <p>Passionné d'informatique et particulièrement de développement web, je prends plaisir à vous partager mes connaissances et à parler d'actualité informatique !</p>
-                <p><a href="#"><i class=""></i></a></p>
+                <p><a href="/upload/miscellaneous/cv-francois-espiasse.pdf" class="btn btn-primary text-decoration-none" target="_blank" rel="noopener"><i class="fa fa-download mr-3"></i>Télécharger mon CV</a></p>
             </section>
 
             <section>
