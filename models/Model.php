@@ -1,5 +1,9 @@
 <?php
 
+namespace Blog\Models;
+
+use \PDO;
+
 class Model
 {
     private const DB_HOST     = '45.13.252.1';

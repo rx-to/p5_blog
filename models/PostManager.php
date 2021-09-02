@@ -1,5 +1,10 @@
 <?php
 
+namespace Blog\Models;
+
+use \PDO;
+use \Blog\Tools\Util;
+
 class PostManager extends Model
 {
     /**
@@ -13,7 +18,7 @@ class PostManager extends Model
 
         $params = [];
 
-        $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
+        $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, COUNT(pc.`id`) `number_of_comments`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                    FROM     `post_comment` pc 
                    JOIN     `user`         u      ON pc.`author_id` = u.`id`";
 
@@ -31,13 +36,16 @@ class PostManager extends Model
         $stmt  = $db->prepare($query);
 
         $stmt->execute($params);
+
         $comments = [];
         while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $comment['user_slug'] = Util::slugify("{$comment['author_first_name']}-{$comment['author_last_name']}-{$comment['author_id']}");
-            $comments[] = $comment;
+            if ($comment['number_of_comments'] > 0)
+                $comments[] = $comment;
+            else
+                break;
         }
 
-        return $comments;
+        return  !empty($comments) ? $comments : false;
     }
 
     /**
@@ -68,7 +76,7 @@ class PostManager extends Model
     {
         $db     = $this->getDB();
 
-        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
+        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
                    LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id` " . ($visibility == 'public' ? 'WHERE p.`status` = 1' : '') . "
@@ -77,19 +85,24 @@ class PostManager extends Model
                    LIMIT     :limit" . (!$limit ? ", 5" : '');
 
         $limit = $limit ? $limit : (isset($_GET['page_no']) ? ($_GET['page_no'] - 1) * 5 : 0);
-
         $stmt  = $db->prepare($query);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 
         $postlist = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $row['user_slug'] = Util::slugify("{$row['author_first_name']}-{$row['author_last_name']}-{$row['creation_author_id']}");
-            $postlist[]       = $row;
+            $postlist[] = $row;
+        }
+        if (!empty($postlist)) {
+            foreach ($postlist as $key => $post) {
+                // Number of comments.
+                $stmt  = $db->query("SELECT COUNT(*) FROM `post_comment` WHERE `post_id` = {$post['id']} AND `status` = 1");
+                $postlist[$key]['number_of_comments'] = $stmt->fetch(PDO::FETCH_COLUMN);
+            }
         }
 
-        $query = "SELECT COUNT(*) FROM `post`";
-        $stmt  = $db->query($query);
+        // Number of pages.
+        $stmt  = $db->query("SELECT COUNT(*) FROM `post`");
         $countPosts = $stmt->fetch(PDO::FETCH_COLUMN);
         $postlist['number_of_pages'] = intval($countPosts / 5) + ($countPosts % 5 > 0 ? 1 : 0);
 
@@ -119,8 +132,10 @@ class PostManager extends Model
         if ($post = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $post['slug'] = Util::slugify($post['title'] . '-' . $post['id']);
 
-            // Comments
-            $post['comments'] = $this->selectComments($id, 1);
+            if (isset($post['number_of_comments'])) {
+                // Comments
+                $post['comments'] = $this->selectComments($id, 1);
+            }
 
             // Previous article slug
             $query = "SELECT `id`, `title` FROM `post` WHERE `id` < :id AND `status` = 1 ORDER BY `creation_date` DESC LIMIT 1";

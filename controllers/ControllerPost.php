@@ -1,6 +1,11 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'models/PostManager.php';
+
+use \Blog\Models\PostManager;
+use \Blog\Tools\Util;
 
 class ControllerPost extends Controller
 {
@@ -22,10 +27,6 @@ class ControllerPost extends Controller
                     else
                         $json['comments'] = $this->generateCommentList(null, 'admin');
                     break;
-
-                    // case 'reportComment';
-                    //     $json['alert'] = $this->reportComment($_POST['comment_id'], $_POST['report']);
-                    //     break;
 
                     // Admin
                 case 'createPost':
@@ -134,7 +135,7 @@ class ControllerPost extends Controller
         } else {
             if ($id !== null) {
                 $data['post'] = $this->getPost($id);
-
+                $data['post']['commentlist'] = $this->generateCommentList($data['post']['id'], 'public', 1);
                 if ($id == 0) {
                     // Post creation form.
                     $data['page'] = [
@@ -251,11 +252,10 @@ class ControllerPost extends Controller
 
         if ($visibility == 'public') {
             $comments = $this->getComments($id, $status);
-
             if (isset($_SESSION['user_id'])) {
                 $curUser = $controllerUser->getUser('id', $_SESSION['user_id']);
             }
-            $html = '<h2>Commentaires (' . count($comments) . ')</h2>';
+            $html = '<h2>Commentaires (' . ($comments ? count($comments) : 0) . ')</h2>';
 
             if (!isset($curUser['id'])) {
                 $html .= '<div class="alert alert-warning">';
@@ -263,7 +263,7 @@ class ControllerPost extends Controller
                 $html .= '</div>';
             }
 
-            if (count($comments) > 0) {
+            if (!empty($comments)) {
                 foreach ($comments as $comment) {
                     $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
                     $html .=     '<div class="actions">';
@@ -283,11 +283,9 @@ class ControllerPost extends Controller
                     $html .=             '</nav>';
                     $html .=         '</div>';
                     $html .=     '</div>';
-                    $html .=     '<a href="/utilisateur/' . $comment['user_slug'] . '/">';
-                    $html .=         '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
-                    $html .=     '</a>';
+                    $html .=     '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
                     $html .=     '<header>';
-                    $html .=         '<h3 class="comment__author-name"><a href="/utilisateur/' . $comment['user_slug'] . '/">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</a></h3>';
+                    $html .=         '<h3 class="comment__author-name">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</h3>';
                     $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
                     $html .=     '</header>';
                     $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';

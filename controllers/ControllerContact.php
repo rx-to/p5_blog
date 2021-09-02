@@ -1,9 +1,14 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'models/ContactManager.php';
 require_once 'PHPMailer.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
+use \Blog\Models\Model;
+use \Blog\Models\ContactManager;
+use \Blog\Tools\Util;
+use \PHPMailer\PHPMailer\PHPMailer;
 
 class ControllerContact extends Controller
 {
@@ -82,19 +87,21 @@ class ControllerContact extends Controller
     }
 
     /**
-    * Returns contactlist.
-    * @return mixed
-    */
-    private function getContactList() {
+     * Returns contactlist.
+     * @return mixed
+     */
+    private function getContactList()
+    {
         $contactManager = new ContactManager();
         return $contactManager->selectContacts();
     }
 
     /**
-    * Returns contactlist.
-    * @return mixed
-    */
-    private function getContact($id) {
+     * Returns contactlist.
+     * @return mixed
+     */
+    private function getContact($id)
+    {
         $model = new Model();
         return $model->selectFrom('contact', 'id', $id);
     }

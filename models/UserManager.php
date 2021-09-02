@@ -1,5 +1,9 @@
 <?php
 
+namespace Blog\Models;
+
+use \PDO;
+
 class UserManager extends Model
 {
     /**

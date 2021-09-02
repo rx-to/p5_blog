@@ -1,7 +1,11 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'models/Model.php';
 require_once 'controllers/ControllerUser.php';
+
+use \Blog\Models\Model;
 
 class Controller
 {
@@ -124,6 +128,7 @@ class Controller
         $controllerName = $data[0]['controller'] ? $data[0]['controller'] : null;
         if ($controllerName) {
             require_once("controllers/$controllerName.php");
+            $controllerName = 'Blog\Controllers\\' . $controllerName;
             $controller = new $controllerName($visibility, $slug);
         }
         return $controller;
@@ -144,7 +149,7 @@ class Controller
 
         $file = $this->getView($visibility, $slug);
         $data = $this->getPageData($visibility, $slug, $id);
-        if (!$data) throw new Exception('Pas de données pour cette URL', 404);
+        if (!$data) throw new \Exception('Pas de données pour cette URL', 404);
 
         ob_start();
         require_once $file;

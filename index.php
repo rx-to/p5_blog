@@ -6,6 +6,9 @@ require_once 'Util.php';
 require_once 'controllers/Controller.php';
 require_once 'controllers/ControllerUser.php';
 
+use Blog\Controllers\Controller;
+use Blog\Controllers\ControllerUser;
+
 // Query strings
 $id         = $_GET['id']         ?? null;
 $visibility = $_GET['visibility'] ?? 'public';
@@ -39,6 +42,6 @@ try {
         // var_dump($curUser);
     }
 } catch (Exception $e) {
-    $mainController = new Controller();
+    $mainController = new Controller($visibility, '404');
     $mainController->displayView($visibility, '404');
 }

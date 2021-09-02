@@ -1,5 +1,9 @@
 <?php
 
+namespace Blog\Tools;
+
+use \DateTime;
+
 class Util
 {
     /**

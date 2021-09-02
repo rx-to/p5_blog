@@ -48,10 +48,7 @@
                         </form>
                     <?php } ?>
                     <div class="comment-list">
-                        <?php
-                        $controllerPost = new ControllerPost();
-                        echo $controllerPost->generateCommentList($data['post']['id'], 'public', 1);
-                        ?>
+                        <?= $data['post']['commentlist'] ?>
                     </div>
                 </section>
             </div>
