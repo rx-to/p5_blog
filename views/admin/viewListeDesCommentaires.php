@@ -23,7 +23,7 @@
                             echo    '<td>' . "{$comment['author_first_name']} {$comment['author_last_name']}" . '</td>';
                             echo    '<td><span class="block-email">' . $comment['creation_date_fr'] . '</span></td>';
                             echo    '<td><span class="block-email">' . $comment['update_date_fr'] . '</span></td>';
-                            echo    '<td>' . Util::shortenString($comment['content']) . '</td>';
+                            echo    '<td>' . Blog\Tools\Util::shortenString($comment['content']) . '</td>';
                             echo    '<td>';
                             echo        '<div class="table-data-feature">';
                             echo            '<a href="/admin/detail-commentaire/' . $comment['id'] . '/" class="item" title="Voir le commentaire"><i class="fas fa-eye"></i></a>';

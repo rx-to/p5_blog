@@ -51,10 +51,9 @@
                                             <label for="introduction" class="form-control-label">Chapô</label>
                                         </div>
                                         <div class="col-12 col-md-9">
-                                            <input type="text" name="introduction" id="introduction" placeholder="Chapô..." class="form-control" <?= $data['post']['introduction'] ? 'value="' . $data['post']['introduction'] . '"' : '' ?>>
+                                            <input type="text" name="introduction" id="introduction" placeholder="Chapô..." class="form-control" <?= isset($data['post']['introduction']) ? 'value="' . $data['post']['introduction'] . '"' : '' ?>>
                                         </div>
                                     </div>
-
                                     <div class="row form-group">
                                         <div class="col col-md-3">
                                             <label for="content" class="form-control-label">Contenu <span class="text-danger">*</span></label>

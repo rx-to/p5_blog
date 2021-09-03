@@ -18,7 +18,7 @@ class PostManager extends Model
 
         $params = [];
 
-        $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, COUNT(pc.`id`) `number_of_comments`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
+        $query = "SELECT     pc.*, DATE_FORMAT(pc.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(pc.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`avatar` `author_avatar`, u.`last_name` `author_last_name`, u.`first_name` `author_first_name`
                    FROM     `post_comment` pc 
                    JOIN     `user`         u      ON pc.`author_id` = u.`id`";
 
@@ -39,11 +39,10 @@ class PostManager extends Model
 
         $comments = [];
         while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if ($comment['number_of_comments'] > 0)
-                $comments[] = $comment;
-            else
-                break;
+            $comments[] = $comment;
         }
+        
+        $comments['number_of_comments'] = count($comments);
 
         return  !empty($comments) ? $comments : false;
     }

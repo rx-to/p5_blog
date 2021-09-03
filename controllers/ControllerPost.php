@@ -127,7 +127,6 @@ class ControllerPost extends Controller
         } elseif (in_array($slug, ['liste-des-commentaires', 'commentaires-en-attente'])) {
             $status = $slug == 'commentaires-en-attente' ? 0 : null;
             $data['commentlist'] = $this->getComments(null, $status);
-
             $data['page'] = [
                 'meta_title'       => $page[0]['meta_title'],
                 'meta_description' => $page[0]['meta_description']
@@ -252,10 +251,11 @@ class ControllerPost extends Controller
 
         if ($visibility == 'public') {
             $comments = $this->getComments($id, $status);
+            $numberOfComments = $comments['number_of_comments'];
             if (isset($_SESSION['user_id'])) {
                 $curUser = $controllerUser->getUser('id', $_SESSION['user_id']);
             }
-            $html = '<h2>Commentaires (' . ($comments ? count($comments) : 0) . ')</h2>';
+            $html = '<h2>Commentaires (' . $numberOfComments . ')</h2>';
 
             if (!isset($curUser['id'])) {
                 $html .= '<div class="alert alert-warning">';
@@ -263,34 +263,36 @@ class ControllerPost extends Controller
                 $html .= '</div>';
             }
 
-            if (!empty($comments)) {
-                foreach ($comments as $comment) {
-                    $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
-                    $html .=     '<div class="actions">';
-                    $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
-                    $html .=         '<div class="actions__wrapper">';
-                    $html .=             '<nav class="actions__list">';
-                    $html .=                 '<ul>';
-                    if (isset($curUser['id']) && ($controllerUser->isAdmin($curUser['id']) || $curUser['id'] == $comment['author_id'])) {
-                        if ($curUser['id'] == $comment['author_id']) {
-                            $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
+            if ($numberOfComments > 0) {
+                foreach ($comments as $key => $comment) {
+                    if (is_int($key)) {
+                        $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
+                        $html .=     '<div class="actions">';
+                        $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
+                        $html .=         '<div class="actions__wrapper">';
+                        $html .=             '<nav class="actions__list">';
+                        $html .=                 '<ul>';
+                        if (isset($curUser['id']) && ($controllerUser->isAdmin($curUser['id']) || $curUser['id'] == $comment['author_id'])) {
+                            if ($curUser['id'] == $comment['author_id']) {
+                                $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
+                            }
+                            $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
+                        } else {
+                            $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
                         }
-                        $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
-                    } else {
-                        $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                        $html .=                 '</ul>';
+                        $html .=             '</nav>';
+                        $html .=         '</div>';
+                        $html .=     '</div>';
+                        $html .=     '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
+                        $html .=     '<header>';
+                        $html .=         '<h3 class="comment__author-name">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</h3>';
+                        $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
+                        $html .=     '</header>';
+                        $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
+                        $html .=     $comment['update_date_fr'] ? '<div class="comment__date mt-3 text-right"><em>(Modifié le ' . $comment['update_date_fr'] . ')</em></div>' : '';
+                        $html .= '</div>';
                     }
-                    $html .=                 '</ul>';
-                    $html .=             '</nav>';
-                    $html .=         '</div>';
-                    $html .=     '</div>';
-                    $html .=     '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
-                    $html .=     '<header>';
-                    $html .=         '<h3 class="comment__author-name">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</h3>';
-                    $html .=         '<div class="comment__date">' . $comment['creation_date_fr'] . '</div>';
-                    $html .=     '</header>';
-                    $html .=     '<div id="comment__content-' . $comment['id'] . '" class="comment__content">' . nl2br($comment['content']) . '</div>';
-                    $html .=     $comment['update_date_fr'] ? '<div class="comment__date mt-3 text-right"><em>(Modifié le ' . $comment['update_date_fr'] . ')</em></div>' : '';
-                    $html .= '</div>';
                 }
             } else {
                 if (isset($curUser['id'])) {
@@ -383,7 +385,9 @@ class ControllerPost extends Controller
 
         if (isset($_FILES['uploadImage'])) {
             $filename    = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
+
             $uploadImage = Util::uploadImage($_FILES['uploadImage'], 'post', $filename);
+
             if (is_array($uploadImage)) {
                 foreach ($uploadImage as $error) {
                     $errors[] = $error;
