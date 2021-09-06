@@ -11,60 +11,71 @@ class ControllerPost extends Controller
 {
     function __construct()
     {
-        if (!empty($_POST)) {
-            switch ($_POST['action']) {
-                    // Public
-                case 'postComment':
-                    $json['alert'] = !$_POST['comment_id'] ? $this->postComment($_POST) : $this->editComment($_POST);
-                    break;
-
-                case 'deleteComment':
-                    $visibility = $this->getVisibility();
-                    $status     = $visibility == 'public' ? 1 : null;
-                    $json['alert']    = $this->deleteComment($_POST['comment_id']);
-                    if ($this->getVisibility() == 'public')
-                        $json['comments'] = $this->generateCommentList($_POST['post_id'], 'public', 1);
-                    else
-                        $json['comments'] = $this->generateCommentList(null, 'admin');
-                    break;
-
-                    // Admin
-                case 'createPost':
-                    $json['alert'] = $this->createPost($_POST);
-                    break;
-
-                case 'editPost':
-                    $json['alert'] = $this->editPost($_POST);
-                    break;
-
-                case 'deletePost':
-                    $json['alert']    = $this->deletePost($_POST['post_id']);
-                    $json['postlist'] = $this->generatePostList(20);
-                    break;
-
-                case 'deleteImage':
-                    $json['alert']     = $this->deleteImage($_POST['post_id']);
-                    $json['inputFile'] = Util::generateInputFile('uploadImage');
-                    break;
-
-                case 'deleteComment':
-                    $json['alert']    = $this->deleteComment($_POST['comment_id']);
-                    $json['comments'] = $this->generateCommentList($_POST['post_id'], 'admin');
-                    break;
-
-                case 'validateComment?getAllComments()':
-                    $json['alert']    = $this->validateComment($_POST['comment_id']);
-                    $json['comments'] = $this->generateCommentList(null, 'admin');
-                    break;
-
-                case 'validateComment?getPendingComments()':
-                    $json['alert']    = $this->validateComment($_POST['comment_id']);
-                    $json['comments'] = $this->generateCommentList(null, 'admin', 0);
-                    break;
-            }
-            echo json_encode($json);
+        if (isset($_POST) && !empty($_POST)) {
+            $this->executeAction($_POST);
         }
     }
+
+    /**
+     * Executes $_POST action.
+     * @param $action
+     */
+    private function executeAction($action)
+    {
+        switch ($_POST['action']) {
+                // Public
+            case 'postComment':
+                $json['alert'] = !$_POST['comment_id'] ? $this->postComment($_POST) : $this->editComment($_POST);
+                break;
+
+            case 'deleteComment':
+                $visibility = $this->getVisibility();
+                $status     = $visibility == 'public' ? 1 : null;
+                $json['alert']    = $this->deleteComment($_POST['comment_id']);
+                if ($this->getVisibility() == 'public')
+                    $json['comments'] = $this->generateCommentList($_POST['post_id'], 'public', 1);
+                else
+                    $json['comments'] = $this->generateCommentList(null, 'admin');
+                break;
+
+                // Admin
+            case 'createPost':
+                $json['alert'] = $this->createPost($_POST);
+                break;
+
+            case 'editPost':
+                $json['alert'] = $this->editPost($_POST);
+                break;
+
+            case 'deletePost':
+                $json['alert']    = $this->deletePost($_POST['post_id']);
+                $json['postlist'] = $this->generatePostList(20);
+                break;
+
+            case 'deleteImage':
+                $json['alert']     = $this->deleteImage($_POST['post_id']);
+                $json['inputFile'] = Util::generateInputFile('uploadImage');
+                break;
+
+            case 'deleteComment':
+                $json['alert']    = $this->deleteComment($_POST['comment_id']);
+                $json['comments'] = $this->generateCommentList($_POST['post_id'], 'admin');
+                break;
+
+            case 'validateComment?getAllComments()':
+                $json['alert']    = $this->validateComment($_POST['comment_id']);
+                $json['comments'] = $this->generateCommentList(null, 'admin');
+                break;
+
+            case 'validateComment?getPendingComments()':
+                $json['alert']    = $this->validateComment($_POST['comment_id']);
+                $json['comments'] = $this->generateCommentList(null, 'admin', 0);
+                break;
+        }
+        echo json_encode($json);
+    }
+
+
 
     /**
      * Returns postlist.
@@ -185,7 +196,7 @@ class ControllerPost extends Controller
     /**
      * Deletes image from post.
      * @param  int    $postID
-     * @return string
+     * @return string 
      */
     private function deleteImage($postID)
     {
@@ -197,25 +208,14 @@ class ControllerPost extends Controller
             foreach ($deleteImage as $error) {
                 $errors[] = $error;
             }
+        } else {
+            $post['image'] = null;
+            if(!$this->editPost($post)) $errors[] = "La suppression de l'image en base de données a échoué.";
         }
+        
         if ($deleteImage !== true && !$postManager->deleteImage($postID)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter le webmaster si le problème persiste.';
         return Util::generateAlert($errors, "L'image a bien été supprimée.");
     }
-
-    // /**
-    //  * Reports comment.
-    //  * @param  int    $id
-    //  * @return string
-    //  */
-    // private function reportComment($id, $report)
-    // {
-    //     $errors = [];
-    //     $postManager = new PostManager();
-    //     if (strlen($report) < 5) $report = 1;
-    //     if (!$postManager->reportComment($id, $report))
-    //         $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-    //     return Util::generateAlert($errors, "Votre signalement a bien été pris en compte. Nous l'étudierons dans les plus brefs délais afin de déterminer s'il enfreint nos conditions générales d'utilisation.");
-    // }
 
     /**
      * Returns post comments.
@@ -382,8 +382,9 @@ class ControllerPost extends Controller
         $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         $errors         = [];
         $defaultError   = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-
+        
         if (isset($_FILES['uploadImage'])) {
+
             $filename    = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
 
             $uploadImage = Util::uploadImage($_FILES['uploadImage'], 'post', $filename);
@@ -410,7 +411,7 @@ class ControllerPost extends Controller
         }
 
 
-        return $alert . Util::redirect('/admin/liste-des-articles/', 3000);
+        return $alert . (empty($errors) ? Util::redirect('/admin/liste-des-articles/', 3000) : '');
     }
 
     /**

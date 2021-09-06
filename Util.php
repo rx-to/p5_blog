@@ -123,6 +123,7 @@ class Util
     public static function uploadImage($image, $folder, $name)
     {
         $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
+        $name     .= '-' . date('YmdHis');
         $path      = "upload/$folder/$name.$extension";
         $errors    = [];
 
@@ -137,10 +138,10 @@ class Util
             $errors[] = "Extensions prises en charge : $extensions";
         }
 
-        if ($image['size'] > 5242880)                                              $errors[] = "L'image doit être inférieure à 5 Mo.";
-        if ($image['error'] > 0 || !move_uploaded_file($image['tmp_name'], $path)) $errors[] = 'Une erreur inattendue est survenue.';
+        if ($image['size'] > 3145728 || $image['error'] == 1)                      $errors[] = "L'image doit être inférieure à 3 Mo.";
+        if (!move_uploaded_file($image['tmp_name'], $path) && $image['error'] > 1) $errors[] = 'Une erreur inattendue est survenue.';
 
-        return count($errors) == 0 ? "$name.$extension" : $errors;
+        return empty($errors) ? "$name.$extension" : $errors;
     }
 
     /**
@@ -159,7 +160,7 @@ class Util
             $errors[] = "Le fichier <strong>`$path`</strong> n'existe pas.";
         }
 
-        return count($errors) == 0 ? true : $errors;
+        return empty($errors) ? true : $errors;
     }
 
     /**

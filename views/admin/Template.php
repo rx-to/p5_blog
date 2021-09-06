@@ -228,19 +228,18 @@
     <script src="/assets/themes/cool-admin/vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="/assets/themes/cool-admin/vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="/assets/themes/cool-admin/vendor/select2/select2.min.js">
-    </script>
+</script>
 
     <!-- Main JS-->
-    <script src="/assets/themes/cool-admin/js/main.js"></script>
-    <script src="/assets/themes/cool-admin/js/custom.js"></script>
-    <!-- <script>
+    <script>
         tinymce.init({
             selector: 'textarea',
             plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
             toolbar_mode: 'floating',
         });
-    </script> -->
-
+    </script>
+    <script src="/assets/themes/cool-admin/js/main.js"></script>
+    <script src="/assets/themes/cool-admin/js/custom.js"></script>
 </body>
 
 </html>
