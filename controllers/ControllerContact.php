@@ -14,10 +14,17 @@ class ControllerContact extends Controller
 {
     function __construct()
     {
-        if (!empty($_POST)) {
-            switch ($_POST['action']) {
+        if (isset($_POST) && !empty($_POST)) {
+            switch (filter_var($_POST['action'], FILTER_SANITIZE_STRING)) {
                 case 'sendContact':
-                    $json['alert'] = $this->sendContact($_POST);
+                    $data = [
+                        'last_name'  => filter_var($_POST['last_name'], FILTER_SANITIZE_STRING),
+                        'first_name' => filter_var($_POST['first_name'], FILTER_SANITIZE_STRING),
+                        'email'      => filter_var($_POST['email'], FILTER_SANITIZE_STRING),
+                        'subject'    => filter_var($_POST['subject'], FILTER_SANITIZE_STRING),
+                        'message'    => filter_var($_POST['message'], FILTER_SANITIZE_STRING)
+                    ];
+                    $json['alert'] = $this->sendContact($data);
                     break;
             }
             echo json_encode($json);

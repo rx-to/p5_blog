@@ -144,7 +144,7 @@ class Controller
     {
         if (isset($_SESSION['user_id'])) {
             $controllerUser = new ControllerUser();
-            $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+            $curUser        = $controllerUser->getUser('id', filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT));
         }
 
         $file = $this->getView($visibility, $slug);
