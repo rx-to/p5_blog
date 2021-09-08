@@ -21,8 +21,7 @@
                                 <h4 class="post-subtitle"><?= $post['introduction'] ?></h4>
                             </a>
                             <p class="post-meta">
-                                Posté le <?= $post['creation_date_fr'] ?> par
-                                <a href="/utilisateur/<?= $post['user_slug'] ?>/"><?= $post['author_first_name'] . ' ' . $post['author_last_name'] ?></a>
+                                Posté le <?= $post['creation_date_fr'] . ' par ' . $post['author_first_name'] . ' ' . $post['author_last_name'] ?></a>
                             </p>
                             <p class="post-comments"><i class="far fa-comment mr-3"></i><?= "{$post['number_of_comments']} $commentWord" ?></p>
                         </div>

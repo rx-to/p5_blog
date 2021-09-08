@@ -1,7 +1,11 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'models/Model.php';
 require_once 'controllers/ControllerUser.php';
+
+use \Blog\Models\Model;
 
 class Controller
 {
@@ -138,12 +142,12 @@ class Controller
     {
         if (isset($_SESSION['user_id'])) {
             $controllerUser = new ControllerUser();
-            $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+            $curUser        = $controllerUser->getUser('id', filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT));
         }
 
         $file = $this->getView($visibility, $slug);
         $data = $this->getPageData($visibility, $slug, $id);
-        if (!$data) throw new Exception('Pas de données pour cette URL', 404);
+        if (!$data) throw new \Exception('Pas de données pour cette URL', 404);
 
         ob_start();
         require_once $file;

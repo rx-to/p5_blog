@@ -5,11 +5,11 @@
 Le but de ce projet est de créer son blog de A à Z en PHP ainsi qu'une interface d'administration pour gérer les articles publiés ainsi que les commentaires des internautes.
 
 ## Contraintes du projet
-- Langage de programmation : PHP ;
-- Utiliser un modeur de templating : Twig ;
-- Utiliser un logiciel de versionning : Git ;
-- Respecter les normes PSR ;
-- Installer les modules via un gestionnaire de dépendances en PHP : Composer.
+    - Langage de programmation : PHP ;
+    - Utiliser un modeur de templating : Twig ;
+    - Utiliser un logiciel de versionning : Git ;
+    - Respecter les normes PSR ;
+    - Installer les modules via un gestionnaire de dépendances en PHP : Composer.
 
 ## Installation
 

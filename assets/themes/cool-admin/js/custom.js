@@ -42,6 +42,7 @@ function ajax(data, url = "") {
 // Forms.
 $(".ajax-form").on("submit", function (e) {
 	e.preventDefault();
+	tinyMCE.triggerSave();
 	let data = new FormData($(this)[0]);
 	ajax(data);
 });

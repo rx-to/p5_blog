@@ -1,18 +1,30 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'models/ContactManager.php';
 require_once 'vendor/autoload.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
+use \Blog\Models\Model;
+use \Blog\Models\ContactManager;
+use \Blog\Tools\Util;
+use \PHPMailer\PHPMailer\PHPMailer;
 
 class ControllerContact extends Controller
 {
     public function __construct()
     {
-        if (!empty($_POST)) {
-            switch ($_POST['action']) {
+        if (isset($_POST) && !empty($_POST)) {
+            switch (filter_var($_POST['action'], FILTER_SANITIZE_STRING)) {
                 case 'sendContact':
-                    $json['alert'] = $this->sendContact($_POST);
+                    $data = [
+                        'last_name'  => isset($_POST['last_name'])  ? filter_var($_POST['last_name'], FILTER_SANITIZE_STRING)  : '',
+                        'first_name' => isset($_POST['first_name']) ? filter_var($_POST['first_name'], FILTER_SANITIZE_STRING) : '',
+                        'email'      => isset($_POST['email'])      ? filter_var($_POST['email'], FILTER_SANITIZE_STRING)      : '',
+                        'subject'    => isset($_POST['subject'])    ? filter_var($_POST['subject'], FILTER_SANITIZE_STRING)    : '',
+                        'message'    => isset($_POST['message'])    ? filter_var($_POST['message'], FILTER_SANITIZE_STRING)    : ''
+                    ];
+                    $json['alert'] = $this->sendContact($data);
                     break;
             }
             echo json_encode($json);
@@ -82,19 +94,21 @@ class ControllerContact extends Controller
     }
 
     /**
-    * Returns contactlist.
-    * @return mixed
-    */
-    private function getContactList() {
+     * Returns contactlist.
+     * @return mixed
+     */
+    private function getContactList()
+    {
         $contactManager = new ContactManager();
         return $contactManager->selectContacts();
     }
 
     /**
-    * Returns contactlist.
-    * @return mixed
-    */
-    private function getContact($id) {
+     * Returns contactlist.
+     * @return mixed
+     */
+    private function getContact($id)
+    {
         $model = new Model();
         return $model->selectFrom('contact', 'id', $id);
     }

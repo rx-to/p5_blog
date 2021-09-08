@@ -1,7 +1,12 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'Util.php';
 require_once 'models/UserManager.php';
+
+use \Blog\Models\UserManager;
+use \Blog\Tools\Util;
 
 class controllerUser extends Controller
 {

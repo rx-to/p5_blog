@@ -27,7 +27,7 @@
     <link href="/assets/themes/cool-admin/vendor/slick/slick.css" rel="stylesheet" media="all">
     <link href="/assets/themes/cool-admin/vendor/select2/select2.min.css" rel="stylesheet" media="all">
     <link href="/assets/themes/cool-admin/vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
-
+    <script src="https://cdn.tiny.cloud/1/i6qvw9jnrrrclkm5lgxqbhpoanylmmqkc5pwufyo7eji4bce/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <!-- Main CSS-->
     <link href="/assets/themes/cool-admin/css/theme.css" rel="stylesheet" media="all">
     <link href="/assets/themes/cool-admin/css/custom.css" rel="stylesheet" media="all">
@@ -228,12 +228,9 @@
     <script src="/assets/themes/cool-admin/vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="/assets/themes/cool-admin/vendor/chartjs/Chart.bundle.min.js"></script>
     <script src="/assets/themes/cool-admin/vendor/select2/select2.min.js">
-    </script>
+</script>
 
     <!-- Main JS-->
-    <script src="/assets/themes/cool-admin/js/main.js"></script>
-    <script src="/assets/themes/cool-admin/js/custom.js"></script>
-    <script src="https://cdn.tiny.cloud/1/i6qvw9jnrrrclkm5lgxqbhpoanylmmqkc5pwufyo7eji4bce/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
             selector: 'textarea',
@@ -241,7 +238,8 @@
             toolbar_mode: 'floating',
         });
     </script>
-
+    <script src="/assets/themes/cool-admin/js/main.js"></script>
+    <script src="/assets/themes/cool-admin/js/custom.js"></script>
 </body>
 
 </html>

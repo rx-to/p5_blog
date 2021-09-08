@@ -1,6 +1,11 @@
 <?php
 
+namespace Blog\Controllers;
+
 require_once 'models/PostManager.php';
+
+use \Blog\Models\PostManager;
+use \Blog\Tools\Util;
 
 class ControllerHome extends Controller
 {
