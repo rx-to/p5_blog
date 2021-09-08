@@ -12,7 +12,7 @@ class Controller
     private $_visibility;
     private $_slug;
 
-    public function __construct($visibility, $slug)
+    function __construct($visibility, $slug)
     {
         $this->setSlug($slug);
         $this->setVisibility($visibility);
@@ -123,13 +123,15 @@ class Controller
         $model          = new Model();
         $visibility     = $this->getVisibility();
         $slug           = $this->getSlug();
-        if ($data = $model->selectPage($visibility, $slug)) {
-            if ($controllerName = $data[0]['controller']) {
-                require_once("controllers/$controllerName.php");
-                $controller = new $controllerName($visibility, $slug);
-            }
+        $data           = $model->selectPage($visibility, $slug);
+        $controller     = null;
+        $controllerName = $data[0]['controller'] ? $data[0]['controller'] : null;
+        if ($controllerName) {
+            require_once("controllers/$controllerName.php");
+            $controllerName = '\\Blog\Controllers\\' . $controllerName;
+            $controller = new $controllerName($visibility, $slug);
         }
-        return $controller ?? false;
+        return $controller;
     }
 
     /**
@@ -142,12 +144,12 @@ class Controller
     {
         if (isset($_SESSION['user_id'])) {
             $controllerUser = new ControllerUser();
-            $curUser        = $controllerUser->getUser('id', filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT));
+            $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         }
 
         $file = $this->getView($visibility, $slug);
         $data = $this->getPageData($visibility, $slug, $id);
-        if (!$data) throw new \Exception('Pas de données pour cette URL', 404);
+        if (!$data) throw new Exception('Pas de données pour cette URL', 404);
 
         ob_start();
         require_once $file;

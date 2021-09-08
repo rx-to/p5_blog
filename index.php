@@ -34,11 +34,6 @@ if ($pageController = $mainController->requireController())
 try {
     if (empty($_POST)) {
         $mainController->displayView($visibility, $slug, $id);
-        // Debug mode
-        // var_dump($slug);
-        // var_dump($visibility);
-        // var_dump($id);
-        // var_dump(get_class($mainController));
     }
 } catch (Exception $e) {
     $mainController = new Controller($visibility, '404');

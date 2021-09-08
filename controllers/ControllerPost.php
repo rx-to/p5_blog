@@ -458,11 +458,13 @@ class ControllerPost extends Controller
      */
     private function editComment($data)
     {
-        //TODO: Sécuriser édition commentaires
-        $errors = [];
+        $controllerUser = new ControllerUser();
+        $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
+        $errors         = [];
+        $comment        = $this->getComment($data['comment_id']);
         if (strlen(strip_tags($data['comment'])) <= 3000) {
             $postManager = new PostManager();
-            if (!$postManager->updateComment($data)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
+            if (!$postManager->updateComment($data) || $curUser['id'] != $comment['author_id']) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
             return Util::generateAlert($errors, "Votre commentaire a bien été mis à jour. Vos modifications s'afficheront après avoir été approuvées par un administrateur.");
         }
     }

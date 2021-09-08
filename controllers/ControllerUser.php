@@ -8,7 +8,7 @@ require_once 'models/UserManager.php';
 use \Blog\Models\UserManager;
 use \Blog\Tools\Util;
 
-class controllerUser extends Controller
+class ControllerUser extends Controller
 {
     public function __construct()
     {

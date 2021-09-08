@@ -68,15 +68,9 @@ class ControllerContact extends Controller
         $mail->setFrom('contact-efblog@ecfransoa.com', 'EF Blog');
         $mail->addAddress('contact@ecfransoa.com', 'François ESPIASSE');
         $mail->addReplyTo($data['email'], ucfirst($data['first_name']) . ' ' . strtoupper($data['last_name']));
-        // $mail->addCC('cc@example.com');
-        // $mail->addBCC('bcc@example.com');
-
-        //Attachments
-        // $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
-        // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
 
         //Content
-        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->isHTML(true); //Set email format to HTML
         $mail->Subject  = $data['subject'];
 
         $mail->Body     = "<p>Vous venez de recevoir une demande de contact sur votre blog :</p>";
