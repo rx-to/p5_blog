@@ -8,7 +8,7 @@ class Controller
     private $_visibility;
     private $_slug;
 
-    function __construct($visibility, $slug)
+    public function __construct($visibility, $slug)
     {
         $this->setSlug($slug);
         $this->setVisibility($visibility);
@@ -119,14 +119,13 @@ class Controller
         $model          = new Model();
         $visibility     = $this->getVisibility();
         $slug           = $this->getSlug();
-        $data           = $model->selectPage($visibility, $slug);
-        $controller     = null;
-        $controllerName = $data[0]['controller'] ? $data[0]['controller'] : null;
-        if ($controllerName) {
-            require_once("controllers/$controllerName.php");
-            $controller = new $controllerName($visibility, $slug);
+        if ($data = $model->selectPage($visibility, $slug)) {
+            if ($controllerName = $data[0]['controller']) {
+                require_once("controllers/$controllerName.php");
+                $controller = new $controllerName($visibility, $slug);
+            }
         }
-        return $controller;
+        return $controller ?? false;
     }
 
     /**

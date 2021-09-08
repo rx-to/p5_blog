@@ -1,13 +1,13 @@
 <?php
 
 require_once 'models/ContactManager.php';
-require_once 'PHPMailer.php';
+require_once 'vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 
 class ControllerContact extends Controller
 {
-    function __construct()
+    public function __construct()
     {
         if (!empty($_POST)) {
             switch ($_POST['action']) {

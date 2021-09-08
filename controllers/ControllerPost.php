@@ -4,7 +4,7 @@ require_once 'models/PostManager.php';
 
 class ControllerPost extends Controller
 {
-    function __construct()
+    public function __construct()
     {
         if (!empty($_POST)) {
             switch ($_POST['action']) {

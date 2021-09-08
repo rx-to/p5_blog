@@ -5,7 +5,7 @@ require_once 'models/UserManager.php';
 
 class controllerUser extends Controller
 {
-    function __construct()
+    public function __construct()
     {
         if (!empty($_POST)) {
             switch ($_POST['action']) {

@@ -19,7 +19,7 @@ $controllerUser = new ControllerUser();
 $curUser = $controllerUser->getUser('id', $_SESSION['user_id'] ?? null);
 
 if ($visibility == 'public' && $slug == 'admin') {
-    if ($controllerUser->isAdmin($curUser['id'])) {
+    if ($curUser && $controllerUser->isAdmin($curUser['id'])) {
         $visibility = 'admin';
         $slug       = 'accueil';
     }
@@ -36,7 +36,6 @@ try {
         // var_dump($visibility);
         // var_dump($id);
         // var_dump(get_class($mainController));
-        // var_dump($curUser);
     }
 } catch (Exception $e) {
     $mainController = new Controller();
