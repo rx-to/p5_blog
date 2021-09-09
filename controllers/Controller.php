@@ -6,13 +6,14 @@ require_once 'models/Model.php';
 require_once 'controllers/ControllerUser.php';
 
 use \Blog\Models\Model;
+use \Exception;
 
 class Controller
 {
     private $_visibility;
     private $_slug;
 
-    function __construct($visibility, $slug)
+    public function __construct($visibility, $slug)
     {
         $this->setSlug($slug);
         $this->setVisibility($visibility);
