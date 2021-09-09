@@ -18,7 +18,7 @@
                         </div>
                     </div>
                     <br>
-                    <button class="btn btn-primary mt-0" id="sendMessageButton" type="submit">Se connecter</button>
+                    <button class="btn btn-primary mt-0" type="submit">Se connecter</button>
                 </form>
                 <p class="mb-0">Vous n'êtes pas encore inscrit ? <a href="/inscription/">Créez votre compte</a>.</p>
             </div>

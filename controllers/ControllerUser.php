@@ -19,12 +19,12 @@ class ControllerUser extends Controller
                     break;
 
                 case 'login':
-                    $json['alert'] = $this->login($_POST);
+                    if (!isset($_SESSION['user_id']))
+                        $json['alert'] = $this->login($_POST);
                     break;
             }
             if (isset($json)) {
                 echo json_encode($json);
-                die;
             }
         } elseif ($_SERVER['REQUEST_URI'] == '/deconnexion/') {
             $this->logout();
