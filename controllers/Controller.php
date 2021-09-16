@@ -126,7 +126,7 @@ class Controller
         $slug           = $this->getSlug();
         $data           = $model->selectPage($visibility, $slug);
         $controller     = null;
-        $controllerName = $data[0]['controller'] ? $data[0]['controller'] : null;
+        $controllerName = isset($data[0]['controller']) && $data[0]['controller'] ? $data[0]['controller'] : null;
         if ($controllerName) {
             require_once("controllers/$controllerName.php");
             $controllerName = '\\Blog\Controllers\\' . $controllerName;
