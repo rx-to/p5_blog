@@ -48,7 +48,7 @@ $(".ajax-form").on("submit", function (e) {
 });
 
 // Comment actions.
-$("a[data-toggle=modal]").on("click", function (e) {
+$(document).on("click", 'a[data-toggle=modal]', function (e) {
 	e.preventDefault();
 
 	let title;

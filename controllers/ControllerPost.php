@@ -145,7 +145,8 @@ class ControllerPost extends Controller
         } else {
             if ($id !== null) {
                 $data['post'] = $this->getPost($id);
-                $data['post']['commentlist'] = $this->generateCommentList($data['post']['id'], 'public', 1);
+                if ($visibility == 'public')
+                    $data['post']['commentlist'] = $this->generateCommentList($data['post']['id'], 'public', 1);
                 if ($id == 0) {
                     // Post creation form.
                     $data['page'] = [
@@ -210,9 +211,9 @@ class ControllerPost extends Controller
             }
         } else {
             $post['image'] = null;
-            if(!$this->editPost($post)) $errors[] = "La suppression de l'image en base de données a échoué.";
+            if (!$this->editPost($post)) $errors[] = "La suppression de l'image en base de données a échoué.";
         }
-        
+
         if ($deleteImage !== true && !$postManager->deleteImage($postID)) $errors[] = 'Une erreur est survenue, veuillez réessayer ou contacter le webmaster si le problème persiste.';
         return Util::generateAlert($errors, "L'image a bien été supprimée.");
     }
@@ -267,23 +268,21 @@ class ControllerPost extends Controller
                 foreach ($comments as $key => $comment) {
                     if (is_int($key)) {
                         $html .= '<div id="comment-' . $comment['id'] . '" class="comment" data-id="' . $comment['id'] . '">';
-                        $html .=     '<div class="actions">';
-                        $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
-                        $html .=         '<div class="actions__wrapper">';
-                        $html .=             '<nav class="actions__list">';
-                        $html .=                 '<ul>';
                         if (isset($curUser['id']) && ($controllerUser->isAdmin($curUser['id']) || $curUser['id'] == $comment['author_id'])) {
+                            $html .=     '<div class="actions">';
+                            $html .=         '<i class="fas fa-ellipsis-v comment__nav-trigger"></i>';
+                            $html .=         '<div class="actions__wrapper">';
+                            $html .=             '<nav class="actions__list">';
+                            $html .=                 '<ul>';
                             if ($curUser['id'] == $comment['author_id']) {
                                 $html .=                 '<li><a href="#edit-comment">Modifier</a></li>';
                             }
                             $html .=                     '<li><a href="#delete-comment" data-toggle="modal" data-target="#staticBackdrop">Supprimer</a></li>';
-                        } else {
-                            $html .=                     '<li><a href="#report-comment" data-toggle="modal" data-target="#staticBackdrop">Signaler</a></li>';
+                            $html .=                 '</ul>';
+                            $html .=             '</nav>';
+                            $html .=         '</div>';
+                            $html .=     '</div>';
                         }
-                        $html .=                 '</ul>';
-                        $html .=             '</nav>';
-                        $html .=         '</div>';
-                        $html .=     '</div>';
                         $html .=     '<img src="/upload/avatar/' . $comment['author_avatar'] . '" alt="Avatar de prenom nom" class="comment__author-avatar">';
                         $html .=     '<header>';
                         $html .=         '<h3 class="comment__author-name">' . $comment['author_first_name'] . ' ' . $comment['author_last_name'] . '</h3>';
@@ -382,8 +381,8 @@ class ControllerPost extends Controller
         $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         $errors         = [];
         $defaultError   = 'Une erreur est survenue, veuillez réessayer ou contacter un administrateur si le problème persiste.';
-        
-        if (isset($_FILES['uploadImage'])) {
+
+        if (isset($_FILES['uploadImage']) && $_FILES['uploadImage']['size'] > 0) {
 
             $filename    = ($data['id'] == 0 ? $postManager->getLastPostID() : $data['id']) . '-' . Util::slugify($data['title']);
 
