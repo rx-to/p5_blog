@@ -27,7 +27,7 @@
                                     if (is_int($key)) {
                                         echo '<tr class="tr-shadow post" data-id="' . $post['id'] . '">';
                                         echo    '<td>' . $post['title'] . '</td>';
-                                        echo    '<td>' . "{$post['author_first_name']} {$post['author_last_name']}" . '</td>';
+                                        echo    '<td>' . "{$post['creation_author_first_name']} {$post['creation_author_last_name']}" . '</td>';
                                         echo    '<td><span class="block-email">' . $post['creation_date_fr'] . '</span></td>';
                                         echo    '<td><span class="block-email">' . $post['update_date_fr'] . '</span></td>';
                                         echo    '<td>';

@@ -11,7 +11,7 @@
                                 <h2 class="post-title"><?= $post['title'] ?></h2>
                             </a>
                             <p class="post-meta">
-                                <?= !$post['update_date'] ? "Posté le {$post['creation_date_fr']}" : "Modifié le {$post['update_date_fr']}" ?> par <?= $post['author_first_name'] . ' ' . $post['author_last_name'] ?>
+                                <?= !$post['update_date'] ? "Posté le {$post['creation_date_fr']}" : "Modifié le {$post['update_date_fr']}" ?> par <?= $post['update_author_id'] ? "{$post['update_author_first_name']} {$post['update_author_last_name']}" : "{$post['creation_author_first_name']} {$post['creation_author_last_name']}" ?>
                             </p>
                             <p class="post-comments"><i class="far fa-comment mr-3"></i><?= "{$post['number_of_comments']} $commentWord" ?></p>
                         </div>

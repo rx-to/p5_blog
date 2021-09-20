@@ -41,7 +41,7 @@ class PostManager extends Model
         while ($comment = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $comments[] = $comment;
         }
-        
+
         $comments['number_of_comments'] = count($comments);
 
         return  !empty($comments) ? $comments : false;
@@ -75,7 +75,7 @@ class PostManager extends Model
     {
         $db     = $this->getDB();
 
-        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`
+        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `creation_author_first_name`, u.`last_name` `creation_author_last_name`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
                    LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id` " . ($visibility == 'public' ? 'WHERE p.`status` = 1' : '') . "
@@ -90,8 +90,20 @@ class PostManager extends Model
 
         $postlist = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $postlist[] = $row;
+            $post = $row;
+            if ($post['update_author_id']) {
+                // Update author.
+                $query2 = "SELECT u.`first_name` `author_first_name`, u.`last_name` `author_last_name` FROM `post` p JOIN `user` u ON p.`update_author_id` = u.`id` WHERE p.`id` = :id";
+                $stmt2  = $db->prepare($query2);
+                $stmt2->execute([':id' => $post['id']]);
+                $updateAuthor = $stmt2->fetch(PDO::FETCH_ASSOC);
+                $post['update_author_last_name']  = $updateAuthor['author_last_name'];
+                $post['update_author_first_name'] = $updateAuthor['author_first_name'];
+            }
+
+            $postlist[] = $post;
         }
+
         if (!empty($postlist)) {
             foreach ($postlist as $key => $post) {
                 // Number of comments.
@@ -118,7 +130,7 @@ class PostManager extends Model
 
         $db     = $this->getDB();
 
-        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `author_first_name`, u.`last_name` `author_last_name`, COUNT(pc.`id`) `number_of_comments`
+        $query  = "SELECT    p.*, DATE_FORMAT(p.`creation_date`, '%d/%m/%Y à %Hh%i') `creation_date_fr`, DATE_FORMAT(p.`update_date`, '%d/%m/%Y à %Hh%i') `update_date_fr`, u.`first_name` `creation_author_first_name`, u.`last_name` `creation_author_last_name`, COUNT(pc.`id`) `number_of_comments`
                    FROM      `post`         p
                    JOIN      `user`         u  ON p.`creation_author_id` = u.`id`
                    LEFT JOIN `post_comment` pc ON pc.`post_id`           = p.`id`
