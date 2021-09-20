@@ -9,7 +9,6 @@
                         <div class="post-preview">
                             <a href="/article/<?= $post['slug'] ?>/">
                                 <h2 class="post-title"><?= $post['title'] ?></h2>
-                                <h3 class="post-subtitle"><?= $post['introduction'] ?></h3>
                             </a>
                             <p class="post-meta">
                                 <?= !$post['update_date'] ? "Posté le {$post['creation_date_fr']}" : "Modifié le {$post['update_date_fr']}" ?> par <?= $post['author_first_name'] . ' ' . $post['author_last_name'] ?>

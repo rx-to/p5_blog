@@ -44,7 +44,7 @@
         </div>
     </nav>
     
-    <header class="masthead" style="background-image: url('/assets/themes/clean-blog/img/<?= $data['page']['header'] ?>')">
+    <header class="masthead" style="background-image: url('<?= isset($data['post']['image']) ? "/upload/post/{$data['post']['image']}" : "/assets/themes/clean-blog/img/{$data['page']['header']}" ?>')">
         <div class="overlay"></div>
         <div class="container">
             <div class="row">

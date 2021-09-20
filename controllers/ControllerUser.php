@@ -15,7 +15,8 @@ class ControllerUser extends Controller
         if (!empty($_POST)) {
             switch ($_POST['action']) {
                 case 'register':
-                    $json['alert'] = $this->register($_POST);
+                    if (!isset($_SESSION['user_id']))
+                        $json['alert'] = $this->register($_POST);
                     break;
 
                 case 'login':
