@@ -15,6 +15,18 @@ Le but de ce projet est de créer son blog de A à Z en PHP ainsi qu'une interfa
 
 ### Étape n°1
 Clônez le répertoire Git sur votre ordinateur en utilisant un serveur local de type WAMP/MAMP ou sur un serveur distant.
+PS : l'envoi d'e-mails ne fonctionnera pas en local.
 
 ### Étape n°2
 Importez la base de données MySQL sur votre serveur.
+
+## Tester le blog 
+
+### En tant que membre classique
+Inscrivez-vous via le formulaire d'inscription.
+
+### En tant qu'administrateur
+Utilisez les identifiants ci-dessous ou inscrivez-vous via le formulaire d'inscription et passez votre statut à `1` directement en base de données.
+
+E-mail : paul.chapon@admin.com
+Mot de passe : Paul1234*
