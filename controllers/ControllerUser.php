@@ -12,20 +12,25 @@ class ControllerUser extends Controller
 {
     public function __construct()
     {
-        if (!empty($_POST)) {
+        if (isset($_POST) && !empty($_POST)) {
+
+            $data = [
+                'email'    => isset($_POST['email'])    ? filter_var($_POST['email'], FILTER_SANITIZE_STRING)    : '',
+                'password' => isset($_POST['password']) ? filter_var($_POST['password'], FILTER_SANITIZE_STRING) : '',
+            ];
+
             switch ($_POST['action']) {
                 case 'register':
-                    if (!isset($_SESSION['user_id']))
-                        $json['alert'] = $this->register($_POST);
+                    $json['alert'] = $this->register($data);
                     break;
 
                 case 'login':
-                    if (!isset($_SESSION['user_id']))
-                        $json['alert'] = $this->login($_POST);
+                    $json['alert'] = $this->login($data);
                     break;
             }
             if (isset($json)) {
                 echo json_encode($json);
+                die;
             }
         } elseif ($_SERVER['REQUEST_URI'] == '/deconnexion/') {
             $this->logout();
