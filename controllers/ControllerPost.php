@@ -248,7 +248,7 @@ class ControllerPost extends Controller
      */
     public function generateCommentList($id = null, $visibility = 'public', $status = null)
     {
-        $controllerUser = new ControllerUser();
+        $controllerUser = ControllerUser::getInstance();
 
         if ($visibility == 'public') {
             $comments = $this->getComments($id, $status);
@@ -376,7 +376,7 @@ class ControllerPost extends Controller
      */
     private function processPost($data, $action)
     {
-        $controllerUser = new ControllerUser();
+        $controllerUser = ControllerUser::getInstance();
         $postManager    = new PostManager();
         $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         $errors         = [];
@@ -440,7 +440,7 @@ class ControllerPost extends Controller
      */
     private function postComment($data)
     {
-        $controllerUser = new ControllerUser();
+        $controllerUser = ControllerUser::getInstance();
         $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         $errors         = [];
         if (strlen(strip_tags($data['comment'])) <= 3000) {
@@ -457,7 +457,7 @@ class ControllerPost extends Controller
      */
     private function editComment($data)
     {
-        $controllerUser = new ControllerUser();
+        $controllerUser = ControllerUser::getInstance();
         $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         $errors         = [];
         $comment        = $this->getComment($data['comment_id']);
@@ -476,7 +476,7 @@ class ControllerPost extends Controller
     private function deleteComment($id)
     {
         $errors         = [];
-        $controllerUser = new ControllerUser();
+        $controllerUser = ControllerUser::getInstance();
         $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         $postManager    = new PostManager();
         $comment        = $this->getComment($id);

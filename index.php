@@ -16,7 +16,7 @@ $slug       = $_GET['slug']       ?? 'accueil';
 
 // Controllers.
 $mainController = new Controller($visibility, $slug);
-$controllerUser = new ControllerUser();
+$controllerUser = ControllerUser::getInstance();
 
 // User data.
 $curUser = $controllerUser->getUser('id', $_SESSION['user_id'] ?? null);

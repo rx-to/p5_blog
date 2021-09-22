@@ -10,17 +10,21 @@ use \Blog\Tools\Util;
 
 class ControllerUser extends Controller
 {
-    public function __construct()
+    private static $_instance;
+
+    private function __construct()
     {
         if (isset($_POST) && !empty($_POST)) {
-
             $data = [
                 'email'    => isset($_POST['email'])    ? filter_var($_POST['email'], FILTER_SANITIZE_STRING)    : '',
                 'password' => isset($_POST['password']) ? filter_var($_POST['password'], FILTER_SANITIZE_STRING) : '',
             ];
-
             switch ($_POST['action']) {
                 case 'register':
+                    $data['first_name'] = isset($_POST['first_name']) ? filter_var($_POST['first_name'], FILTER_SANITIZE_STRING) : '';
+                    $data['last_name']  = isset($_POST['last_name'])  ? filter_var($_POST['last_name'], FILTER_SANITIZE_STRING)  : '';
+                    $data['birthdate']  = isset($_POST['birthdate'])  ? filter_var($_POST['birthdate'], FILTER_SANITIZE_STRING)  : '';
+
                     $json['alert'] = $this->register($data);
                     break;
 
@@ -30,14 +34,22 @@ class ControllerUser extends Controller
             }
             if (isset($json)) {
                 echo json_encode($json);
-                die;
+                // die;
             }
         } elseif ($_SERVER['REQUEST_URI'] == '/deconnexion/') {
             $this->logout();
-        } elseif ($_SERVER['REQUEST_URI'] == '/connexion/') {
-            if (isset($_SESSION['user_id']))
-                header('Location: /');
-        }
+        } 
+    }
+
+    /**
+     * Singleton : returns instance of class.
+     */
+    public static function getInstance()
+    {
+        if (empty(self::$_instance))
+            self::$_instance = new ControllerUser();
+
+        return self::$_instance;
     }
 
     /**

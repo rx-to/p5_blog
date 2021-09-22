@@ -127,7 +127,7 @@ class Controller
         $data           = $model->selectPage($visibility, $slug);
         $controller     = null;
         $controllerName = isset($data[0]['controller']) && $data[0]['controller'] ? $data[0]['controller'] : null;
-        if ($controllerName) {
+        if ($controllerName && $controllerName != 'ControllerUser') {
             require_once("controllers/$controllerName.php");
             $controllerName = '\\Blog\Controllers\\' . $controllerName;
             $controller = new $controllerName($visibility, $slug);
@@ -144,7 +144,7 @@ class Controller
     public function displayView($visibility, $slug, $id = null)
     {
         if (isset($_SESSION['user_id'])) {
-            $controllerUser = new ControllerUser();
+            $controllerUser = ControllerUser::getInstance();
             $curUser        = $controllerUser->getUser('id', $_SESSION['user_id']);
         }
 

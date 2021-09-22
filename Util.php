@@ -89,7 +89,7 @@ class Util
      */
     public static function generateAlert($errors, $success)
     {
-        if (preg_match('/\<script\>/', $success)) {
+        if (empty($errors) && preg_match('/\<script\>/', $success)) {
             $alert = $success;
         } else {
             $alert = '<div class="alert alert-' . (empty($errors) ? 'success' : 'danger') . '">';
