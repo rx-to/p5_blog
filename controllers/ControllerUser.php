@@ -34,7 +34,6 @@ class ControllerUser extends Controller
             }
             if (isset($json)) {
                 echo json_encode($json);
-                // die;
             }
         } elseif ($_SERVER['REQUEST_URI'] == '/deconnexion/') {
             $this->logout();

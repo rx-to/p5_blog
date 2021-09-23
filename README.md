@@ -20,6 +20,8 @@ PS : l'envoi d'e-mails ne fonctionnera pas en local.
 ### Étape n°2
 Importez la base de données MySQL sur votre serveur.
 
+PS : une base de données distante est déjà utilisée dans le projet, mais vous pouvez changer les informations de connexion à l'intérieur de la méthode `getDB()` dans le fichier `models/Model.php`.
+
 ## Tester le blog 
 
 ### En tant que membre classique
