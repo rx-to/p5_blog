@@ -6,10 +6,10 @@ use \PDO;
 
 class Model
 {
-    private const DB_HOST     = '45.13.252.1';
-    private const DB_USER     = 'u571467911_blog';
-    private const DB_PASSWORD = '9f?eWrxUJ*';
-    private const DB_NAME     = 'u571467911_blog';
+    private const DB_HOST     = 'INSERT_HOST';
+    private const DB_USER     = 'INSERT_USER';
+    private const DB_PASSWORD = 'INSERT_PASSWORD';
+    private const DB_NAME     = 'INSERT_DBNAME';
     private $_pdo;
 
     /**

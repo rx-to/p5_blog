@@ -18,9 +18,10 @@ Clônez le répertoire Git sur votre ordinateur en utilisant un serveur local de
 PS : l'envoi d'e-mails ne fonctionnera pas en local.
 
 ### Étape n°2
-Importez la base de données MySQL sur votre serveur.
+Importez la base de données MySQL fournie sur votre serveur.
 
-PS : une base de données distante est déjà utilisée dans le projet, mais vous pouvez changer les informations de connexion à l'intérieur de la méthode `getDB()` dans le fichier `models/Model.php`.
+### Étape n°3
+Renseignez les informations de connexion dans les constantes au début fichier `models/Model.php`.
 
 ## Tester le blog 
 
